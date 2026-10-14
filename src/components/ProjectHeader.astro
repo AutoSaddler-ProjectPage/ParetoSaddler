@@ -1,0 +1,219 @@
+---
+import { Icon } from "astro-icon/components";
+import { project } from "../data/project";
+const base = import.meta.env.BASE_URL;
+// Match the reference pages: lead/corresponding authors first, then centered rows.
+const authorRows = [
+  project.authors.slice(0, 5),
+  project.authors.slice(5, 11),
+  project.authors.slice(11),
+];
+---
+
+<header class="project-header" id="top">
+  <div class="hero-inner">
+    <h1>
+      <span class="project-name"><span>Pareto</span>Saddler</span><span
+        class="project-subtitle"
+        >Pareto-Guided Optimization of Agent Harnesses<br
+          class="desktop-break"
+        /> for Quality and Cost</span
+      >
+    </h1>
+    <div class="authors" aria-label="Authors">
+      {
+        authorRows.map((row) => (
+          <div class="author-row">
+            {row.map((author) => (
+              <span class="author">
+                {author.name}
+                <sup>
+                  {author.affiliation}
+                  {author.note && ` ${author.note}`}
+                </sup>
+              </span>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+    <div class="affiliations" aria-label="Affiliations">
+      {
+        project.affiliations.map((name, i) => (
+          <span class="affiliation">
+            <sup>{i + 1}</sup>
+            {name}
+          </span>
+        ))
+      }
+    </div>
+    <p class="author-notes">
+      <sup>*</sup>Work done during an internship at Microsoft. <span
+        ><sup>†</sup>Corresponding author.</span
+      >
+    </p>
+    <div class="resource-links">
+      <a
+        class="resource primary"
+        href={`${base}paretosaddler.pdf`}
+        target="_blank"
+        rel="noopener noreferrer"
+        ><Icon name="ri:file-pdf-2-line" /> Paper <span aria-hidden="true"
+          >↗</span
+        ></a
+      >
+      {
+        project.codeUrl ? (
+          <a class="resource" href={project.codeUrl}>
+            <Icon name="ri:github-line" /> Code
+          </a>
+        ) : (
+          <span class="resource unavailable" aria-label="Code, coming soon">
+            <Icon name="ri:github-line" /> Code <small>coming soon</small>
+          </span>
+        )
+      }
+      {
+        project.arxivUrl && (
+          <a class="resource" href={project.arxivUrl}>
+            <Icon name="academicons:arxiv" /> arXiv
+          </a>
+        )
+      }
+      <a class="resource" href="#citation"
+        ><Icon name="ri:double-quotes-l" /> Cite</a
+      >
+    </div>
+    <p class="hero-lede">
+      Optimize the harness for <strong>quality and cost.</strong><br />Preserve
+      promising steps. Choose what to deploy at the end.
+    </p>
+  </div>
+  <div class="headline-results">
+    <div class="headline-benchmark">
+      <div class="benchmark-name">ClawMark <span>HELD-OUT TEST</span></div>
+      <div class="headline-metrics">
+        <div>
+          <strong>+10.49<span> pp</span></strong><p>higher quality</p><small
+            >70.86% → 81.35%</small
+          >
+        </div><div>
+          <strong>−13.7<span>%</span></strong><p>execution cost</p><small
+            >$1.17 → $1.01 / task</small
+          >
+        </div>
+      </div>
+    </div>
+    <div class="headline-benchmark">
+      <div class="benchmark-name">GAIA2 <span>HELD-OUT TEST</span></div>
+      <div class="headline-metrics">
+        <div>
+          <strong>+6.67<span> pp</span></strong><p>higher quality</p><small
+            >56.22% → 62.89%</small
+          >
+        </div><div>
+          <strong>−42.3<span>%</span></strong><p>execution cost</p><small
+            >$0.78 → $0.45 / task</small
+          >
+        </div>
+      </div>
+    </div>
+    <p class="headline-footnote">
+      ParetoSaddler (quality-extreme) vs. the initial harness · Cost reductions
+      as reported in the paper.
+    </p>
+  </div>
+</header>
+
+<style>
+  .project-header {
+    text-align: center;
+    padding: 64px 24px 0;
+  }
+  .hero-inner {
+    max-width: 976px;
+    margin: auto;
+  }
+  h1 {
+    margin-bottom: 16px;
+  }
+  .authors {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    color: #27272a;
+  }
+  .author-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 20px;
+    width: 100%;
+    font-size: 18px;
+    line-height: 1.375;
+  }
+  .author {
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  /* Keep superscripts close to their text without crowding the row above. */
+  sup {
+    position: relative;
+    top: calc(-0.3em - 1px);
+    vertical-align: baseline;
+    line-height: 0;
+  }
+  .author sup {
+    margin-left: 2px;
+    font-size: 14px;
+    font-weight: 600;
+    color: inherit;
+  }
+  .affiliations {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 20px;
+    margin: 16px auto 0;
+    font-size: 16px;
+    line-height: 1.375;
+    color: #3f3f46;
+  }
+  .affiliation {
+    max-width: 100%;
+    text-align: center;
+  }
+  .affiliation sup {
+    margin: 0 2px 0 0;
+    font-size: 14px;
+  }
+  .author-notes {
+    margin: 16px 0;
+    font-size: 14px;
+    line-height: 1.71429;
+    color: #3f3f46;
+  }
+  .author-notes sup {
+    font-size: 0.75em;
+    margin-left: 0;
+  }
+  .author-notes span {
+    margin-left: 5px;
+    white-space: normal;
+  }
+  @media (max-width: 639px) {
+    .author-row {
+      font-size: 16px;
+    }
+    .author sup {
+      font-size: 12px;
+    }
+    .affiliations {
+      font-size: 14px;
+    }
+    .affiliation sup {
+      font-size: 12px;
+    }
+  }
+</style>

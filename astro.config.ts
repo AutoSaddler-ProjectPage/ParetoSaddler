@@ -13,11 +13,12 @@ import astroExpressiveCode from "astro-expressive-code";
 
 // https://astro.build/config
 export default defineConfig({
+  trailingSlash: "always",
   vite: {
     plugins: [tailwindcss()],
   },
   markdown: {
-    remarkPlugins: [remarkMath],
+    remarkPlugins: [[remarkMath, { singleDollarTextMath: false }]],
     rehypePlugins: [
       rehypeKatex,
       [

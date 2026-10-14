@@ -1,0 +1,384 @@
+---
+import { results } from "../data/results";
+const x = (cost: number) => 68 + ((cost - 0.72) / 0.63) * 520;
+const y = (quality: number) => 320 - ((quality - 65) / 21) * 275;
+const selected = results[7];
+---
+
+<div class="results-explorer" id="results-explorer">
+  <div class="explorer-toolbar">
+    <div class="benchmark-switch" role="group" aria-label="Select benchmark">
+      <button type="button" data-benchmark="cm" aria-pressed="true"
+        >ClawMark</button
+      >
+      <button type="button" data-benchmark="gaia" aria-pressed="false"
+        >GAIA2</button
+      >
+    </div>
+    <span class="test-label">HELD-OUT TEST · TABLE 1</span>
+  </div>
+  <div class="explorer-body">
+    <div class="plot-column">
+      <div class="plot-heading">
+        <h3 id="plot-heading">ClawMark</h3><span
+          >↖ Higher quality, lower cost</span>
+      </div>
+      <svg
+        class="results-plot"
+        viewBox="0 0 640 390"
+        role="group"
+        aria-labelledby="chart-title chart-description"
+      >
+        <title id="chart-title">ClawMark held-out quality and cost</title>
+        <desc id="chart-description"
+          >Each marker is a development-selected harness evaluated on the test
+          set. Select a marker to inspect its mean and standard deviation.
+          Better results lie toward the upper left.</desc
+        >
+        <rect x="68" y="45" width="520" height="275" fill="#fbfcfa"></rect>
+        {
+          [65, 70, 75, 80, 85].map((v) => (
+            <g class="quality-tick">
+              <>
+                <line x1="68" x2="588" y1={y(v)} y2={y(v)} />
+                <text x="54" y={y(v) + 5} text-anchor="end">
+                  {v}
+                </text>
+              </>
+            </g>
+          ))
+        }
+        {
+          [0.8, 0.9, 1, 1.1, 1.2, 1.3].map((v) => (
+            <g class="cost-tick">
+              <>
+                <line x1={x(v)} x2={x(v)} y1="45" y2="320" />
+                <text x={x(v)} y="344" text-anchor="middle">
+                  ${v.toFixed(2)}
+                </text>
+              </>
+            </g>
+          ))
+        }
+        <path class="plot-axis" d="M68 45V320H588"></path>
+        <text
+          class="axis-title"
+          transform="translate(20 185) rotate(-90)"
+          text-anchor="middle">Quality (%) ↑</text
+        >
+        <text class="axis-title" x="328" y="377" text-anchor="middle"
+          >LLM cost per task (USD) ↓</text
+        >
+        {
+          results.map((r) => (
+            <g
+              class:list={[
+                "plot-point",
+                r.family,
+                r.id === selected.id && "is-selected",
+              ]}
+              data-result={r.id}
+              transform={`translate(${x(r.cm[2])} ${y(r.cm[0])})`}
+              tabindex="0"
+              role="button"
+              aria-label={`${r.name}: quality ${r.cm[0]}%, cost $${r.cm[2].toFixed(2)} per task`}
+              aria-pressed={r.id === selected.id ? "true" : "false"}
+            >
+              <circle class="point-halo" r="14" />
+              {r.family === "mh" ? (
+                <rect
+                  class="point-symbol"
+                  x="-6"
+                  y="-6"
+                  width="12"
+                  height="12"
+                  rx="1"
+                />
+              ) : r.family === "as" ? (
+                <path class="point-symbol" d="M0 -8L8 6H-8Z" />
+              ) : r.family === "default" ? (
+                <path
+                  class="point-symbol"
+                  d="M0 -9L2.5 -2.5L9 0L2.5 2.5L0 9L-2.5 2.5L-9 0L-2.5 -2.5Z"
+                />
+              ) : (
+                <circle class="point-symbol" r="6.5" />
+              )}
+            </g>
+          ))
+        }
+      </svg>
+      <div class="plot-legend" aria-label="Plot legend">
+        <span class="ps">● ParetoSaddler</span><span class="mh"
+          >■ Meta-Harness</span
+        ><span class="as">▲ AutoSaddler</span><span class="default"
+          >✦ Default</span>
+      </div>
+      <p class="plot-help">
+        Hover, tap, or focus a marker to inspect a harness.
+      </p>
+    </div>
+    <aside class="result-detail" aria-labelledby="selected-name">
+      <p class="eyebrow">SELECTED HARNESS</p>
+      <h3 id="selected-name">PS-Pareto Q</h3>
+      <p id="selected-description">
+        Quality-extreme harness selected on the development Pareto set.
+      </p>
+      <dl class="selected-metrics">
+        <div>
+          <dt>Quality ↑</dt><dd id="selected-quality">
+            81.35<span> ± 3.11%</span>
+          </dd>
+        </div><div>
+          <dt>Cost / task ↓</dt><dd id="selected-cost">
+            $1.01<span> ± $0.02</span>
+          </dd>
+        </div>
+      </dl>
+      <div class="selected-comparison">
+        <p>vs. initial harness</p><strong id="quality-difference"
+          >+10.49 pp quality</strong
+        ><strong id="cost-difference">−$0.16 / task</strong>
+      </div>
+      <p class="detail-note">
+        Mean ± sample SD<br />Three held-out test repeats
+      </p>
+    </aside>
+  </div>
+  <p id="selection-status" class="sr-only" role="status" aria-live="polite"></p>
+  <div
+    class="results-table-wrap"
+    role="region"
+    aria-label="Full test results, scroll horizontally on small screens"
+    tabindex="0"
+  >
+    <table class="results-table">
+      <caption
+        ><span id="table-benchmark">ClawMark</span> · full held-out test results (mean
+        ± SD)</caption
+      >
+      <thead
+        ><tr
+          ><th scope="col">Harness</th><th scope="col">Quality (%) ↑</th><th
+            scope="col">Cost / task ($) ↓</th
+          ></tr
+        ></thead
+      >
+      <tbody
+        >{
+          results.map((r) => (
+            <tr
+              data-row={r.id}
+              class:list={[
+                r.family === "ps" && "ours",
+                r.id === selected.id && "is-selected",
+              ]}
+            >
+              <>
+                <th scope="row">
+                  <button
+                    type="button"
+                    data-select={r.id}
+                    aria-pressed={r.id === selected.id ? "true" : "false"}
+                  >
+                    {r.name}
+                    {r.family === "ps" && <span class="ours-label">ours</span>}
+                  </button>
+                </th>
+                <td data-quality>
+                  <>
+                    <strong>{r.cm[0].toFixed(2)}</strong>
+                    <span> ± {r.cm[1].toFixed(2)}</span>
+                  </>
+                </td>
+                <td data-cost>
+                  <>
+                    <strong>{r.cm[2].toFixed(2)}</strong>
+                    <span> ± {r.cm[3].toFixed(2)}</span>
+                  </>
+                </td>
+              </>
+            </tr>
+          ))
+        }</tbody
+      >
+    </table>
+  </div>
+</div>
+<script>
+  import { results, type Benchmark } from "../data/results";
+  const root = document.querySelector<HTMLElement>("#results-explorer");
+  if (root) {
+    let benchmark: Benchmark = "cm";
+    let selectedId: string = "ps-pareto-q";
+    const descriptions: Record<string, string> = {
+      default: "Initial harness before automatic optimization.",
+      "as-quality": "AutoSaddler adaptation optimizing quality alone.",
+      "mh-mincost": "Meta-Harness with quality-constrained cost minimization.",
+      "mh-pareto-c":
+        "Meta-Harness cost-extreme harness selected on the development Pareto set.",
+      "mh-pareto-q":
+        "Meta-Harness quality-extreme harness selected on the development Pareto set.",
+      "ps-mincost": "ParetoSaddler with quality-constrained cost minimization.",
+      "ps-pareto-c":
+        "Cost-extreme harness selected on the development Pareto set.",
+      "ps-pareto-q":
+        "Quality-extreme harness selected on the development Pareto set.",
+    };
+    const setText = (selector: string, text: string) => {
+      const element = root.querySelector(selector);
+      if (element) element.textContent = text;
+    };
+    const select = (id: string, announce = false) => {
+      const r = results.find((item) => item.id === id);
+      if (!r) return;
+      selectedId = id;
+      const [q, qs, c, cs] = r[benchmark];
+      const initial = results[0][benchmark];
+      setText("#selected-name", r.name);
+      setText("#selected-description", descriptions[id]);
+      for (const [selector, mean, sd] of [
+        ["#selected-quality", q.toFixed(2), ` ± ${qs.toFixed(2)}%`],
+        ["#selected-cost", `$${c.toFixed(2)}`, ` ± $${cs.toFixed(2)}`],
+      ]) {
+        const element = root.querySelector(selector);
+        if (element) {
+          element.textContent = mean;
+          const span = document.createElement("span");
+          span.textContent = sd;
+          element.append(span);
+        }
+      }
+      const qualityChange = q - initial[0];
+      const costChange = c - initial[2];
+      setText(
+        "#quality-difference",
+        `${qualityChange < 0 ? "−" : "+"}${Math.abs(qualityChange).toFixed(2)} pp quality`,
+      );
+      setText(
+        "#cost-difference",
+        `${costChange < 0 ? "−" : "+"}$${Math.abs(costChange).toFixed(2)} / task`,
+      );
+      root
+        .querySelector("#quality-difference")
+        ?.classList.toggle("regression", qualityChange < 0);
+      root
+        .querySelector("#cost-difference")
+        ?.classList.toggle("regression", costChange > 0);
+      root.querySelectorAll<SVGGElement>(".plot-point").forEach((point) => {
+        const active = point.dataset.result === id;
+        point.classList.toggle("is-selected", active);
+        point.setAttribute("aria-pressed", String(active));
+      });
+      root
+        .querySelectorAll<HTMLTableRowElement>("[data-row]")
+        .forEach((row) => {
+          const active = row.dataset.row === id;
+          row.classList.toggle("is-selected", active);
+          row
+            .querySelector("button")
+            ?.setAttribute("aria-pressed", String(active));
+        });
+      if (announce)
+        setText(
+          "#selection-status",
+          `${r.name}: quality ${q.toFixed(2)} percent, cost ${c.toFixed(2)} dollars per task.`,
+        );
+    };
+    const render = () => {
+      const name = benchmark === "cm" ? "ClawMark" : "GAIA2";
+      const minX = benchmark === "cm" ? 0.72 : 0.38;
+      const maxX = benchmark === "cm" ? 1.35 : 0.9;
+      const minY = benchmark === "cm" ? 65 : 35;
+      const maxY = benchmark === "cm" ? 86 : 67;
+      const x = (v: number) => 68 + ((v - minX) / (maxX - minX)) * 520;
+      const y = (v: number) => 320 - ((v - minY) / (maxY - minY)) * 275;
+      setText("#plot-heading", name);
+      setText("#chart-title", `${name} held-out quality and cost`);
+      setText("#table-benchmark", name);
+      root
+        .querySelectorAll<HTMLButtonElement>("[data-benchmark]")
+        .forEach((button) =>
+          button.setAttribute(
+            "aria-pressed",
+            String(button.dataset.benchmark === benchmark),
+          ),
+        );
+      const yTicks =
+        benchmark === "cm" ? [65, 70, 75, 80, 85] : [35, 42, 49, 56, 63];
+      const xTicks =
+        benchmark === "cm"
+          ? [0.8, 0.9, 1, 1.1, 1.2, 1.3]
+          : [0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
+      root.querySelectorAll(".quality-tick").forEach((tick, i) => {
+        const line = tick.querySelector("line")!;
+        line.setAttribute("y1", String(y(yTicks[i])));
+        line.setAttribute("y2", String(y(yTicks[i])));
+        const text = tick.querySelector("text")!;
+        text.setAttribute("y", String(y(yTicks[i]) + 5));
+        text.textContent = String(yTicks[i]);
+      });
+      root.querySelectorAll(".cost-tick").forEach((tick, i) => {
+        const line = tick.querySelector("line")!;
+        line.setAttribute("x1", String(x(xTicks[i])));
+        line.setAttribute("x2", String(x(xTicks[i])));
+        const text = tick.querySelector("text")!;
+        text.setAttribute("x", String(x(xTicks[i])));
+        text.textContent = `$${xTicks[i].toFixed(2)}`;
+      });
+      for (const r of results) {
+        const [q, qs, c, cs] = r[benchmark];
+        const point = root.querySelector(`[data-result="${r.id}"]`)!;
+        point.setAttribute("transform", `translate(${x(c)} ${y(q)})`);
+        point.setAttribute(
+          "aria-label",
+          `${r.name}: quality ${q}%, cost $${c.toFixed(2)} per task`,
+        );
+        const row = root.querySelector(`[data-row="${r.id}"]`)!;
+        row.querySelector("[data-quality] strong")!.textContent = q.toFixed(2);
+        row.querySelector("[data-quality] span")!.textContent =
+          ` ± ${qs.toFixed(2)}`;
+        row.querySelector("[data-cost] strong")!.textContent = c.toFixed(2);
+        row.querySelector("[data-cost] span")!.textContent =
+          ` ± ${cs.toFixed(2)}`;
+      }
+      select(selectedId);
+    };
+    root
+      .querySelectorAll<HTMLButtonElement>("[data-benchmark]")
+      .forEach((button) =>
+        button.addEventListener("click", () => {
+          benchmark = button.dataset.benchmark as Benchmark;
+          render();
+          setText(
+            "#selection-status",
+            `Showing ${benchmark === "cm" ? "ClawMark" : "GAIA2"} held-out test results.`,
+          );
+        }),
+      );
+    root.querySelectorAll<SVGGElement>("[data-result]").forEach((point) => {
+      point.addEventListener("pointerenter", () =>
+        select(point.dataset.result!),
+      );
+      point.addEventListener("click", () =>
+        select(point.dataset.result!, true),
+      );
+      point.addEventListener("focus", () =>
+        select(point.dataset.result!, true),
+      );
+      point.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          select(point.dataset.result!, true);
+        }
+      });
+    });
+    root
+      .querySelectorAll<HTMLButtonElement>("[data-select]")
+      .forEach((button) =>
+        button.addEventListener("click", () =>
+          select(button.dataset.select!, true),
+        ),
+      );
+  }
+</script>

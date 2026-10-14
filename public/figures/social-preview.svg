@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<rect width="1200" height="630" fill="#f7f9f6"/><rect x="0" y="0" width="1200" height="10" fill="#24734b"/>
+<g font-family="DejaVu Sans,Arial,sans-serif"><text x="74" y="88" font-size="15" letter-spacing="3" fill="#637067">AGENT HARNESS OPTIMIZATION / PREPRINT 2026</text>
+<text x="70" y="209" font-size="85" font-weight="bold" letter-spacing="-5" fill="#202a24"><tspan fill="#24734b">Pareto</tspan>Saddler</text>
+<text x="75" y="275" font-size="30" fill="#202a24">Pareto-Guided Optimization of Agent Harnesses</text><text x="75" y="318" font-size="30" fill="#202a24">for Quality and Cost</text>
+<path d="M75 365H1125" stroke="#dce5dd"/>
+<text x="75" y="415" font-size="20" fill="#202a24">ClawMark</text><text x="635" y="415" font-size="20" fill="#202a24">GAIA2</text>
+<text x="75" y="478" font-size="37" font-weight="bold" fill="#24734b">+10.49 pp</text><text x="355" y="478" font-size="37" font-weight="bold" fill="#24734b">−13.7%</text>
+<text x="635" y="478" font-size="37" font-weight="bold" fill="#24734b">+6.67 pp</text><text x="915" y="478" font-size="37" font-weight="bold" fill="#24734b">−42.3%</text>
+<text x="75" y="511" font-size="15" fill="#637067">quality</text><text x="355" y="511" font-size="15" fill="#637067">cost / task</text><text x="635" y="511" font-size="15" fill="#637067">quality</text><text x="915" y="511" font-size="15" fill="#637067">cost / task</text>
+<text x="75" y="580" font-size="13" fill="#637067">Held-out test · Quality-extreme ParetoSaddler vs. initial harness · Cost reductions reported in the paper</text></g></svg>
