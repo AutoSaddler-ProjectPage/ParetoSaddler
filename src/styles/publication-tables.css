@@ -1,0 +1,328 @@
+/* Paper-style figures and tables, shared by the results and controlled ablations. */
+.results-figure {
+  margin-block: 0 42px;
+}
+.results-figure img {
+  width: 100%;
+  height: auto;
+}
+.results-figure-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+.results-figure figcaption,
+.publication-note {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+.results-figure figcaption {
+  margin-top: 14px;
+}
+.results-figure figcaption,
+.method-figure figcaption {
+  max-width: var(--content-width);
+  margin-inline: auto;
+}
+.publication-heading {
+  margin: 0 0 14px;
+  font-size: var(--subheading-size);
+  line-height: 1.5;
+}
+.publication-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+.publication-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: 1.5px solid #a9b9ad;
+  border-bottom: 1.5px solid #a9b9ad;
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.65;
+  font-variant-numeric: tabular-nums;
+}
+.publication-table-wide {
+  min-width: 970px;
+}
+.publication-table th,
+.publication-table td {
+  padding: 9px 12px;
+  vertical-align: middle;
+}
+.publication-table thead {
+  border-bottom: 1px solid #b8c6bc;
+}
+.publication-table thead th {
+  text-align: center;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.publication-table thead tr:first-child th[colspan] {
+  padding-bottom: 5px;
+}
+.publication-table thead tr + tr th {
+  padding-top: 5px;
+}
+.publication-table thead th[rowspan] {
+  vertical-align: bottom;
+}
+.publication-table thead tr:first-child th:first-child,
+.publication-table thead th.metric-heading {
+  text-align: left;
+}
+.publication-table tbody th {
+  text-align: left;
+  font-weight: 400;
+}
+.publication-table tbody {
+  border-bottom: 1px solid var(--line);
+}
+.publication-table td {
+  text-align: center;
+}
+.publication-table .metric-label {
+  color: var(--muted);
+  text-align: left;
+  white-space: nowrap;
+}
+.publication-table .method-label {
+  white-space: nowrap;
+}
+.publication-table .is-ours,
+.publication-table .preferred-cell {
+  background: #edf4ed;
+}
+.publication-table .is-ours .method-label {
+  font-weight: 650;
+}
+.publication-table .result-value {
+  white-space: nowrap;
+}
+.publication-table .result-deviation {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+.publication-table .result-value-best .result-mean {
+  font-weight: 700;
+}
+.publication-table .result-value-second .result-mean {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.publication-table .group-start {
+  border-left: 1px solid var(--line);
+}
+
+/* Give the main comparison a clear hierarchy without changing the ablations. */
+#main-results-table {
+  table-layout: fixed;
+  border-color: #c5d1c8;
+}
+#main-results-table .method-column {
+  width: 17%;
+}
+#main-results-table .metric-column {
+  width: 8%;
+}
+#main-results-table .overall-column {
+  width: 16%;
+}
+#main-results-table .universe-column {
+  width: 14.333333%;
+}
+#main-results-table thead {
+  border-color: #d4ded6;
+}
+#main-results-table thead th {
+  padding-inline: 10px;
+  padding-bottom: 14px;
+}
+#main-results-table thead tr:first-child th[colspan] {
+  padding-top: 16px;
+  padding-bottom: 6px;
+}
+#main-results-table thead tr + tr th {
+  padding-top: 4px;
+}
+#main-results-table .universe-heading {
+  color: #6c776f;
+  font-weight: 500;
+}
+#main-results-table tbody,
+#main-results-table .group-start {
+  border-color: #e3eae5;
+}
+#main-results-table tbody tr:first-child > :not(.method-label) {
+  padding: 14px 10px 4px;
+}
+#main-results-table tbody tr:last-child > * {
+  padding: 4px 10px 14px;
+}
+#main-results-table .method-label {
+  padding: 14px 10px;
+}
+#main-results-table .metric-label {
+  color: #6f7a72;
+}
+#main-results-table .overall-result {
+  font-weight: 500;
+}
+#main-results-table .universe-result {
+  color: #526057;
+}
+#main-results-table .is-ours {
+  background: #f1f7f2;
+}
+#main-results-table .is-ours .method-label {
+  color: var(--green-dark);
+  font-weight: 650;
+}
+#main-results-table .result-value-aligned {
+  display: inline-grid;
+  grid-template-columns: 5ch 5.4ch;
+  align-items: baseline;
+  column-gap: 0.4ch;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+#main-results-table .result-value-aligned .result-mean {
+  display: inline-grid;
+  grid-template-columns: 40% 60%;
+}
+#main-results-table .result-integer {
+  text-align: right;
+}
+#main-results-table .result-fraction {
+  text-align: left;
+}
+#main-results-table .result-deviation {
+  color: #6d786f;
+  font-weight: 400;
+  text-align: left;
+}
+.publication-note {
+  margin: 13px 0 0;
+}
+.ablation-studies {
+  display: grid;
+  gap: 36px;
+}
+.ablation-study {
+  display: flow-root;
+  min-width: 0;
+}
+.ablation-study > p:not(.publication-note),
+.ablation-analysis p {
+  max-width: var(--content-width);
+  color: var(--muted);
+  margin: 0 0 22px;
+  font-size: 18px;
+  line-height: 1.8;
+  text-wrap: pretty;
+}
+.ablation-study strong {
+  color: var(--ink);
+  font-weight: 650;
+}
+.ablation-comparison {
+  display: contents;
+}
+.ablation-comparison > .publication-table-scroll {
+  float: left;
+  width: calc(50% - 16px);
+  min-width: 0;
+  margin-bottom: 18px;
+}
+.ablation-comparison .publication-table {
+  min-width: 0;
+}
+.ablation-comparison .publication-table th,
+.ablation-comparison .publication-table td {
+  padding: 8px;
+}
+.ablation-comparison .publication-table thead th {
+  white-space: normal;
+  text-wrap: balance;
+  line-height: 1.4;
+}
+.ablation-figure {
+  float: right;
+  width: calc(50% - 16px);
+  min-width: 0;
+  margin: 0 0 18px 32px;
+}
+.ablation-figure img {
+  width: 100%;
+  height: auto;
+}
+.ablation-figure figcaption {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+.ablation-analysis {
+  margin-top: 0;
+}
+.ablation-analysis p {
+  margin-bottom: 16px;
+}
+.ablation-analysis p:last-child {
+  margin-bottom: 0;
+}
+:is(#rq2, #rq3) .ablation-figure {
+  max-width: 360px;
+  justify-self: center;
+}
+@media (min-width: 901px) {
+  :is(#rq2, #rq3) .ablation-figure {
+    width: min(36%, 360px);
+  }
+  :is(#rq2, #rq3) .ablation-comparison > .publication-table-scroll {
+    width: calc(100% - min(36%, 360px) - 32px);
+  }
+}
+@media (max-width: 900px) {
+  .ablation-comparison {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    width: min(100%, 520px);
+    margin: 20px auto;
+  }
+  .ablation-comparison > .publication-table-scroll,
+  .ablation-figure {
+    float: none;
+    width: 100%;
+    margin: 0;
+  }
+}
+@media (max-width: 680px) {
+  .results-figure img {
+    min-width: 720px;
+  }
+  .results-figure {
+    margin-bottom: 30px;
+  }
+  .publication-table {
+    font-size: 15px;
+  }
+  .publication-table th,
+  .publication-table td {
+    padding: 9px 10px;
+  }
+  .publication-table-wide {
+    min-width: 910px;
+  }
+  .ablation-studies {
+    gap: 28px;
+  }
+}

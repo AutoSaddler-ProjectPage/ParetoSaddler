@@ -1,7 +1,6 @@
 ---
 import { trajectories } from "../data/trajectories";
 import "../styles/trajectory.css";
-const base = import.meta.env.BASE_URL;
 ---
 
 <div
@@ -78,7 +77,7 @@ const base = import.meta.env.BASE_URL;
         </title>
         <desc id="trajectory-chart-desc"
           >Quality versus cost on the development set. Solid arrows show
-          continued harness refinement; dashed lines show the Pareto set at the
+          harness updates; dashed lines show the Pareto set at the
           displayed iteration. Select a marker or use the timeline below.</desc
         >
         <defs
@@ -123,7 +122,7 @@ const base = import.meta.env.BASE_URL;
           visibility="hidden"></text>
       </svg>
       <div class="trajectory-legend">
-        <span>● Continued refinement</span><span class="muted-marker"
+        <span>● Harness update</span><span class="muted-marker"
           >● Other evaluated candidate</span
         ><span class="frontier-legend">┄ Current Pareto set</span>
       </div>
@@ -229,24 +228,7 @@ const base = import.meta.env.BASE_URL;
   >
   </p>
 </div>
-<p class="trajectory-source">
-  Development trajectories from Appendix H, Figures 7–8; diagnoses and updates
-  from Tables 12 and 15. <strong>≈</strong> marks estimates recovered from the plotted
-  coordinates. Rejected proposals have no development point. <a
-    id="trajectory-paper-link"
-    href={`${base}paretosaddler.pdf#page=22`}
-    target="_blank"
-    rel="noopener noreferrer">View original in paper ↗</a
-  >
-</p>
-<noscript
-  ><p>
-    Enable JavaScript to play the optimization runs, or read the complete
-    trajectories in <a href={`${base}paretosaddler.pdf#page=22`}
-      >Appendices H–J of the paper</a
-    >.
-  </p></noscript
->
+<noscript><p>Enable JavaScript to explore the optimization runs.</p></noscript>
 <script>
   import {
     trajectories,
@@ -566,7 +548,7 @@ const base = import.meta.env.BASE_URL;
         text(
           "#trajectory-movement",
           iteration
-            ? "Evaluated candidate; not on the continued-refinement path in the annotated figure."
+            ? "Evaluated candidate outside the update path."
             : "Before optimization",
         );
       text(
@@ -802,10 +784,6 @@ const base = import.meta.env.BASE_URL;
         "#trajectory-run-description",
         `${run.proposals} proposals · ${run.tasks} development tasks · 3 runs/task`,
       );
-      const link = document.querySelector<HTMLAnchorElement>(
-        "#trajectory-paper-link",
-      );
-      if (link) link.hash = `page=${run.page}`;
       for (const button of root.querySelectorAll<HTMLButtonElement>(
         "[data-trajectory-benchmark]",
       ))

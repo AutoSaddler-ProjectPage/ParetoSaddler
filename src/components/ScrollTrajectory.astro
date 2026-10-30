@@ -1,0 +1,860 @@
+---
+import "../styles/scroll-trajectory.css";
+---
+
+<section
+  class="scroll-trajectories research-figure"
+  id="scroll-trajectories"
+  data-scene="search"
+  data-benchmark="cm"
+  aria-label="Animated optimization trajectories"
+  tabindex="0"
+>
+  <div class="journey-stage">
+    <div class="journey-intro"><slot name="intro" /></div>
+    <div class="journey-frame">
+      <div class="journey-visual">
+        <div class="journey-map">
+          <div class="journey-map-toolbar">
+            <div
+              class="journey-benchmarks figure-tabs"
+              role="group"
+              aria-label="Select research benchmark"
+            >
+              <button
+                type="button"
+                data-journey-benchmark="cm"
+                aria-pressed="true">ClawMark</button
+              ><button
+                type="button"
+                data-journey-benchmark="gaia"
+                aria-pressed="false">GAIA2</button
+              >
+            </div>
+          </div>
+          <div class="journey-map-caption">
+            <div
+              class="journey-iteration-readout"
+              aria-label="Optimization iteration"
+            >
+              <span class="journey-iteration-word">Iteration</span>
+              <span data-journey-iteration>0 / 17</span>
+            </div>
+            <div
+              class="journey-playback"
+              role="group"
+              aria-label="Trajectory playback"
+            >
+              <button
+                type="button"
+                data-journey-replay
+                aria-label="Restart"
+                title="Restart"
+                aria-controls="scroll-trajectory-chart"
+              >
+                <svg viewBox="0 0 20 20" aria-hidden="true"
+                  ><path d="M4.5 7.5a6 6 0 1 1-.4 4.5M4 3.5v4.5h4.5"
+                  ></path></svg
+                >
+              </button>
+              <button
+                type="button"
+                data-journey-previous
+                aria-label="Previous iteration (←)"
+                title="Previous iteration (←)"
+                aria-controls="scroll-trajectory-chart"
+              >
+                <svg viewBox="0 0 20 20" aria-hidden="true"
+                  ><path d="m12.5 4.5-5.5 5.5 5.5 5.5"></path></svg
+                >
+              </button>
+              <button
+                type="button"
+                data-journey-play
+                aria-label="Pause (space)"
+                title="Pause (space)"
+                aria-controls="scroll-trajectory-chart"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  data-journey-play-icon
+                  aria-hidden="true"
+                  style="display:none"
+                  ><path d="m6.5 4 9 6-9 6z" fill="currentColor" stroke="none"
+                  ></path></svg
+                >
+                <svg
+                  viewBox="0 0 20 20"
+                  data-journey-pause-icon
+                  aria-hidden="true"
+                  ><path
+                    d="M5.5 4h3v12h-3zM11.5 4h3v12h-3z"
+                    fill="currentColor"
+                    stroke="none"></path></svg
+                >
+              </button>
+              <button
+                type="button"
+                data-journey-next
+                aria-label="Next iteration (→)"
+                title="Next iteration (→)"
+                aria-controls="scroll-trajectory-chart"
+              >
+                <svg viewBox="0 0 20 20" aria-hidden="true"
+                  ><path d="m7.5 4.5 5.5 5.5-5.5 5.5"></path></svg
+                >
+              </button>
+              <div
+                class="journey-speeds"
+                role="group"
+                aria-label="Playback speed"
+              >
+                {
+                  [1, 2, 4].map((speed) => (
+                    <button
+                      type="button"
+                      data-journey-speed={speed}
+                      aria-pressed={speed === 1}
+                      aria-label={`${speed}× playback speed`}
+                    >
+                      {speed}×
+                    </button>
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+          <div class="journey-timeline">
+            <input
+              type="range"
+              data-journey-seek
+              aria-label="Optimization iteration"
+              aria-controls="scroll-trajectory-chart"
+              min="0"
+              max="17"
+              step="any"
+              value="0"
+            />
+            <div
+              class="journey-timeline-ticks"
+              data-journey-ticks
+              aria-hidden="true"
+            >
+            </div>
+          </div>
+          <svg
+            class="journey-map-svg"
+            id="scroll-trajectory-chart"
+            viewBox="0 0 800 520"
+            role="group"
+            tabindex="-1"
+            aria-label="Quality and cost on development data. Play the optimization trajectory or select an iteration."
+          >
+            <desc
+              >Arrowheads show the direction of harness updates. Dashed
+              gold lines show the current Pareto frontier. Rejected proposals
+              have no development point.</desc
+            >
+            <rect
+              class="journey-plot-field"
+              x="84"
+              y="68"
+              width="630"
+              height="352"></rect>
+            <g data-map-grid></g>
+            <path class="journey-map-axis" d="M84 68V420H714"></path>
+            <text
+              class="journey-axis-title"
+              transform="translate(23 244) rotate(-90)"
+              text-anchor="middle">Response Quality</text
+            >
+            <text
+              class="journey-axis-title"
+              x="399"
+              y="496"
+              text-anchor="middle">Cost per task</text
+            >
+            <path data-map-frontier class="journey-map-frontier" fill="none"
+            ></path><path
+              data-map-next-frontier
+              class="journey-map-frontier"
+              fill="none"
+              visibility="hidden"></path><g data-map-edges></g>
+            <g data-map-leaders aria-hidden="true"></g><g data-map-points></g><g
+              data-map-labels
+              aria-hidden="true"></g>
+          </svg>
+          <div class="journey-map-legend" aria-label="Trajectory legend">
+            <span
+              ><svg viewBox="0 0 30 12" aria-hidden="true"
+                ><path d="M1 6H26M20 2L26 6L20 10"></path></svg
+              ><span data-journey-edge-legend>Harness update</span></span
+            >
+            <span
+              ><i class="legend-frontier" aria-hidden="true"></i>Pareto frontier</span
+            >
+            <span><i class="legend-point" aria-hidden="true"></i>Evaluated</span
+            >
+          </div>
+          <div
+            class="journey-final-tools"
+            aria-hidden="true"
+            data-journey-final-tools
+          >
+            <div
+              class="journey-deployment"
+              role="group"
+              aria-label="Choose a deployment preference from the development Pareto frontier"
+            >
+              <button
+                type="button"
+                data-journey-preference="quality"
+                aria-pressed="false"
+                aria-controls="scroll-trajectory-chart"
+                disabled>Higher quality</button
+              >
+              <button
+                type="button"
+                data-journey-preference="cost"
+                aria-pressed="false"
+                aria-controls="scroll-trajectory-chart"
+                disabled>Lower cost</button
+              >
+            </div>
+            <p
+              class="sr-only"
+              role="status"
+              aria-live="polite"
+              data-journey-choice-status
+            >
+            </p>
+          </div>
+        </div>
+        <div
+          class="journey-map-inspector"
+          aria-label="Selected candidate details"
+        >
+          <div class="journey-candidate-panel">
+            <div class="journey-inspector-heading">
+              <span data-journey-status>INITIAL</span>
+            </div>
+            <div class="journey-candidate-summary">
+              <span data-journey-point-name>Initial harness</span><strong
+                data-journey-point-metrics>66.13% / $1.45</strong
+              >
+            </div>
+          </div>
+          <div class="journey-evidence">
+            <section class="journey-diagnosis">
+              <h4>Diagnosis</h4>
+              <p data-journey-evidence-diagnosis>
+                The starting point before ParetoSaddler optimization.
+              </p>
+            </section>
+            <section class="journey-patch">
+              <h4>Patch</h4>
+              <p data-journey-point-description data-journey-evidence-patch>
+                Prompts, tools, middleware, and control logic have not yet been
+                updated by this run.
+              </p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <noscript
+    ><p class="journey-no-script">
+      Enable JavaScript to explore the optimization trajectory.
+    </p></noscript
+  >
+</section>
+
+<script>
+  import { observeChartTypography } from "../lib/figure-typography";
+  import { trajectories, type TrajectoryBenchmark } from "../data/trajectories";
+  import { createScrollTrajectoryPlot } from "../lib/scroll-trajectory-plot";
+  const root = document.querySelector<HTMLElement>("#scroll-trajectories");
+  if (root) {
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    const svg = root.querySelector<SVGSVGElement>(".journey-map-svg")!;
+    const playButton = root.querySelector<HTMLButtonElement>(
+      "[data-journey-play]",
+    )!;
+    const seek = root.querySelector<HTMLInputElement>("[data-journey-seek]")!;
+    const millisecondsPerIteration = 1800;
+    let speed = 1;
+    let playing = !reduced.matches;
+    let inView = false;
+    let entryDelay = 900;
+    let benchmark: TrajectoryBenchmark = "cm";
+    let active = 0,
+      iteration = 0,
+      selection: string | null = null,
+      lastPlot = "",
+      frameId = 0;
+    let playhead = 0,
+      targetPlayhead = 0,
+      lastFrameTime = 0;
+    let deploymentPreference: "quality" | "cost" | null = null;
+    let viewMode: "follow" | "detail" | "overview" = "follow";
+    let zoom = 0;
+    const inDetailRegion = (id: string) => {
+      const step = trajectories.gaia.steps[Number(id)];
+      return (
+        !!step &&
+        step.cost !== null &&
+        step.quality !== null &&
+        step.cost >= 0.345 &&
+        step.cost <= 0.415 &&
+        step.quality >= 54 &&
+        step.quality <= 63
+      );
+    };
+    const selectCandidate = (
+      id: string,
+      preference: "quality" | "cost" | null = null,
+    ) => {
+      if (active === 0 && Number(id) > Math.floor(playhead)) return;
+      playing = false;
+      deploymentPreference = preference;
+      selection = id;
+      syncPlayback();
+      if (
+        benchmark === "gaia" &&
+        viewMode !== "detail" &&
+        zoom < 0.99 &&
+        inDetailRegion(id)
+      )
+        setViewMode("detail");
+      render();
+    };
+    const text = (selector: string, value: string) => {
+      root.querySelector(selector)!.textContent = value;
+    };
+    const inspector = root.querySelector<HTMLElement>(
+      ".journey-map-inspector",
+    )!;
+    const inspectorContent = [
+      ...inspector.querySelectorAll<HTMLElement>(
+        ".journey-inspector-heading, .journey-candidate-summary, .journey-evidence p",
+      ),
+    ];
+    let inspectorKey = "";
+    let inspectorRevision = 0;
+    let inspectorAnimations: Animation[] = [];
+    const outgoingInspectorLayers = new Map<HTMLElement, Animation>();
+    const settleInspector = () => {
+      inspectorRevision++;
+      inspectorAnimations.forEach((animation) => animation.cancel());
+      inspectorAnimations = [];
+      outgoingInspectorLayers.forEach((animation, layer) => {
+        animation.cancel();
+        layer.remove();
+      });
+      outgoingInspectorLayers.clear();
+      inspector.setAttribute("aria-busy", "false");
+    };
+    const updateInspector = (key: string, commit: () => void) => {
+      if (key === inspectorKey) return;
+      const initialized = inspectorKey !== "";
+      inspectorKey = key;
+      if (!initialized || reduced.matches || !inView || document.hidden) {
+        settleInspector();
+        commit();
+        return;
+      }
+      const revision = ++inspectorRevision;
+      const style = getComputedStyle(inspector);
+      const opacities = inspectorContent.map(
+        (element) => getComputedStyle(element).opacity,
+      );
+      // Snapshot only the content, excluding earlier outgoing layers.
+      const outgoing = inspector.cloneNode(false) as HTMLElement;
+      [...inspector.children]
+        .filter((child) => !child.hasAttribute("data-inspector-snapshot"))
+        .forEach((child) => outgoing.append(child.cloneNode(true)));
+      outgoing.setAttribute("data-inspector-snapshot", "");
+      outgoing.setAttribute("aria-hidden", "true");
+      outgoing.removeAttribute("aria-busy");
+      outgoing.inert = true;
+      outgoing
+        .querySelectorAll("[id]")
+        .forEach((node) => node.removeAttribute("id"));
+      Object.assign(outgoing.style, {
+        position: "absolute",
+        top: `${-inspector.clientTop}px`,
+        left: `${-inspector.clientLeft}px`,
+        width: style.width,
+        height: style.height,
+        margin: "0",
+        padding: style.padding,
+        gap: style.gap,
+        alignItems: style.alignItems,
+        justifyContent: style.justifyContent,
+        background: "transparent",
+        borderColor: "transparent",
+        pointerEvents: "none",
+        zIndex: "1",
+      });
+      outgoing
+        .querySelectorAll<HTMLElement>(
+          ".journey-candidate-panel, .journey-evidence section",
+        )
+        .forEach((section) => {
+          section.style.background = "transparent";
+          section.style.borderColor = "transparent";
+        });
+      outgoing
+        .querySelectorAll<HTMLElement>(".journey-evidence h4")
+        .forEach((heading) => {
+          heading.style.visibility = "hidden";
+        });
+      outgoing
+        .querySelectorAll<HTMLElement>(
+          ".journey-inspector-heading, .journey-candidate-summary, .journey-evidence p",
+        )
+        .forEach((element, index) => {
+          element.style.opacity = opacities[index];
+        });
+      inspectorAnimations.forEach((animation) => animation.cancel());
+      commit();
+      inspector.append(outgoing);
+      inspector.setAttribute("aria-busy", "true");
+      const timing = {
+        duration: 360,
+        easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+      };
+      const fadeOut = outgoing.animate(
+        [{ opacity: 1 }, { opacity: 0 }],
+        timing,
+      );
+      outgoingInspectorLayers.set(outgoing, fadeOut);
+      void fadeOut.finished
+        .catch(() => {})
+        .finally(() => {
+          outgoing.remove();
+          outgoingInspectorLayers.delete(outgoing);
+        });
+      // New text appears as old text disappears, with no empty interval.
+      // On rapid input, existing outgoing layers finish their fades independently.
+      const incoming = inspectorContent.map((element) =>
+        element.animate([{ opacity: 0 }, { opacity: 1 }], timing),
+      );
+      inspectorAnimations = incoming;
+      void Promise.all(incoming.map((animation) => animation.finished))
+        .then(() => {
+          if (revision !== inspectorRevision) return;
+          inspectorAnimations = [];
+          inspector.setAttribute("aria-busy", "false");
+        })
+        .catch(() => {
+          // A newer iteration or reduced-motion preference cancels this fade.
+        });
+    };
+    const plot = createScrollTrajectoryPlot(svg, selectCandidate, () =>
+      setViewMode("overview", true),
+    );
+    const render = () => {
+      const run = trajectories[benchmark];
+      const archive = active === 1;
+      const count = archive ? run.proposals : iteration;
+      const id = selection ?? String(archive ? run.archive[0] : count);
+      if (plot.render(archive ? run.proposals : playhead, id, zoom))
+        requestUpdate();
+      root
+        .querySelector<HTMLElement>("[data-journey-final-tools]")!
+        .setAttribute("aria-hidden", String(!archive));
+      root
+        .querySelectorAll<HTMLButtonElement>("[data-journey-preference]")
+        .forEach((button) => {
+          button.disabled = !archive;
+          button.setAttribute(
+            "aria-pressed",
+            String(
+              archive &&
+                deploymentPreference === button.dataset.journeyPreference,
+            ),
+          );
+        });
+      root.dataset.deploymentChoice = archive
+        ? (deploymentPreference ?? "")
+        : "";
+      const key = `${benchmark}-${active}-${count}-${id}-${deploymentPreference}`;
+      if (key === lastPlot) return;
+      lastPlot = key;
+      text("[data-journey-iteration]", `${count} / ${run.proposals}`);
+      const step = run.steps[Number(id)] ?? run.steps[0];
+      text(
+        "[data-journey-choice-status]",
+        archive && deploymentPreference
+          ? `${deploymentPreference === "quality" ? "Higher quality" : "Lower cost"}: selected I-${step.iteration}, development quality approximately ${step.quality!.toFixed(2)} percent and cost ${step.cost!.toFixed(3)} dollars per task.`
+          : "",
+      );
+      updateInspector(`${benchmark}-${id}`, () => {
+        text(
+          "[data-journey-status]",
+          step.finalStatus === "Rejected"
+            ? "SCREENED OUT"
+            : step.iteration === 0
+              ? "INITIAL"
+              : "DEVELOPMENT EVALUATED",
+        );
+        inspector.dataset.status = step.finalStatus.toLowerCase();
+        text(
+          "[data-journey-point-name]",
+          step.iteration
+            ? `I-${step.iteration} · ${step.finalStatus === "Rejected" ? "screened out" : step.title}`
+            : "Initial harness",
+        );
+        text(
+          "[data-journey-point-metrics]",
+          step.quality === null
+            ? "No development evaluation"
+            : `${step.quality.toFixed(2)}% / $${step.cost!.toFixed(3)}`,
+        );
+        text("[data-journey-evidence-diagnosis]", step.diagnosis);
+        text("[data-journey-evidence-patch]", step.change);
+      });
+    };
+    const syncPlayback = () => {
+      const total = trajectories[benchmark].proposals;
+      const complete = playhead >= total;
+      const label = playing
+        ? "Pause (space)"
+        : complete
+          ? "Replay from start"
+          : "Play (space)";
+      playButton.setAttribute("aria-label", label);
+      playButton.title = label;
+      playButton.setAttribute("aria-pressed", String(playing));
+      root.querySelector<SVGSVGElement>(
+        "[data-journey-play-icon]",
+      )!.style.display = playing ? "none" : "";
+      root.querySelector<SVGSVGElement>(
+        "[data-journey-pause-icon]",
+      )!.style.display = playing ? "" : "none";
+      root.querySelector<HTMLButtonElement>(
+        "[data-journey-previous]",
+      )!.disabled = playhead <= 0;
+      root.querySelector<HTMLButtonElement>("[data-journey-next]")!.disabled =
+        complete;
+      root
+        .querySelectorAll<HTMLButtonElement>("[data-journey-speed]")
+        .forEach((button) =>
+          button.setAttribute(
+            "aria-pressed",
+            String(Number(button.dataset.journeySpeed) === speed),
+          ),
+        );
+      root.dataset.speed = String(speed);
+      seek.style.setProperty(
+        "--journey-progress",
+        `${(100 * playhead) / total}%`,
+      );
+      seek.max = String(total);
+      seek.value = String(playhead);
+      seek.setAttribute(
+        "aria-valuetext",
+        `Iteration ${Math.round(playhead)} of ${total}`,
+      );
+      root.dataset.playback = complete
+        ? "complete"
+        : playing
+          ? inView && !document.hidden
+            ? "playing"
+            : "waiting"
+          : "paused";
+    };
+    const canAdvance = () =>
+      playing &&
+      inView &&
+      !document.hidden &&
+      playhead < trajectories[benchmark].proposals;
+    const update = () => {
+      if (frameId) cancelAnimationFrame(frameId);
+      frameId = 0;
+      const now = performance.now();
+      const dt = lastFrameTime ? Math.min(80, now - lastFrameTime) : 0;
+      lastFrameTime = now;
+      const run = trajectories[benchmark];
+      if (canAdvance()) {
+        const elapsed = Math.max(0, dt * speed - entryDelay);
+        entryDelay = Math.max(0, entryDelay - dt * speed);
+        playhead = Math.min(
+          run.proposals,
+          playhead + elapsed / millisecondsPerIteration,
+        );
+      }
+      targetPlayhead = playhead;
+      const next = playhead >= run.proposals ? 1 : 0;
+      if (next === 1) playing = false;
+      if (active !== next) {
+        active = next;
+        selection = null;
+        deploymentPreference = null;
+        lastPlot = "";
+        root.dataset.scene = next === 1 ? "archive" : "search";
+      }
+      const snapCamera = reduced.matches;
+      const focusPhase = Math.max(0, Math.min(1, (playhead - 11) / 4));
+      const clusterReady = playhead >= 12;
+      const targetZoom =
+        benchmark !== "gaia" || viewMode === "overview"
+          ? 0
+          : viewMode === "detail"
+            ? clusterReady
+              ? 1
+              : 0
+            : focusPhase * focusPhase * (3 - 2 * focusPhase);
+      root.dataset.clusterReady = String(clusterReady);
+      root.dataset.gaiaView = viewMode;
+      if (snapCamera) zoom = targetZoom;
+      else {
+        zoom += (targetZoom - zoom) * (1 - Math.exp(-dt / 110));
+        if (Math.abs(targetZoom - zoom) < 0.0001) zoom = targetZoom;
+      }
+      root.dataset.targetZoom = targetZoom.toFixed(4);
+      root.dataset.targetPlayhead = targetPlayhead.toFixed(4);
+      const nextIteration = Math.min(run.proposals, Math.ceil(playhead - 1e-6));
+      if (nextIteration !== iteration) {
+        iteration = nextIteration;
+        selection = null;
+      }
+      render();
+      syncPlayback();
+      if (canAdvance() || Math.abs(targetZoom - zoom) > 0.00001)
+        requestUpdate();
+      else lastFrameTime = 0;
+    };
+    const requestUpdate = () => {
+      if (!frameId)
+        frameId = requestAnimationFrame(() => {
+          frameId = 0;
+          update();
+        });
+    };
+    const resetPlayback = (autoplay: boolean) => {
+      playing = autoplay;
+      entryDelay = 900;
+      lastFrameTime = 0;
+      active = 0;
+      iteration = 0;
+      playhead = 0;
+      targetPlayhead = 0;
+      selection = null;
+      deploymentPreference = null;
+      lastPlot = "";
+      zoom = 0;
+      viewMode = "follow";
+      root.dataset.scene = "search";
+      plot.configure(benchmark);
+      renderTimelineTicks();
+      update();
+    };
+    const togglePlayback = () => {
+      if (playhead >= trajectories[benchmark].proposals)
+        return resetPlayback(true);
+      playing = !playing;
+      lastFrameTime = 0;
+      requestUpdate();
+    };
+    const seekTo = (value: number) => {
+      playing = false;
+      entryDelay = 0;
+      playhead = Math.max(
+        0,
+        Math.min(trajectories[benchmark].proposals, Math.round(value)),
+      );
+      selection = null;
+      deploymentPreference = null;
+      lastPlot = "";
+      lastFrameTime = 0;
+      update();
+    };
+    const stepBy = (delta: number) => seekTo(Math.ceil(playhead) + delta);
+    const renderTimelineTicks = () => {
+      const total = trajectories[benchmark].proposals;
+      const container = root.querySelector<HTMLElement>(
+        "[data-journey-ticks]",
+      )!;
+      container.replaceChildren();
+      const ticks = new Set([0, total]);
+      for (let n = 5; n < total; n += 5) ticks.add(n);
+      for (const n of [...ticks].sort((a, b) => a - b)) {
+        const tick = document.createElement("span");
+        tick.textContent = String(n);
+        tick.style.left = `${(n / total) * 100}%`;
+        container.append(tick);
+      }
+    };
+    root
+      .querySelectorAll<HTMLButtonElement>("[data-journey-preference]")
+      .forEach((button) =>
+        button.addEventListener("click", () => {
+          if (active !== 1) return;
+          const preference = button.dataset.journeyPreference as
+            | "quality"
+            | "cost";
+          const run = trajectories[benchmark];
+          const candidates = run.archive.map((id) => run.steps[id]);
+          candidates.sort((a, b) =>
+            preference === "quality"
+              ? b.quality! - a.quality! || a.cost! - b.cost!
+              : a.cost! - b.cost! || b.quality! - a.quality!,
+          );
+          const choice = candidates[0];
+          if (choice) selectCandidate(String(choice.iteration), preference);
+        }),
+      );
+    playButton.addEventListener("click", togglePlayback);
+    root
+      .querySelector<HTMLButtonElement>("[data-journey-replay]")!
+      .addEventListener("click", () => resetPlayback(true));
+    root
+      .querySelector<HTMLButtonElement>("[data-journey-previous]")!
+      .addEventListener("click", () => stepBy(-1));
+    root
+      .querySelector<HTMLButtonElement>("[data-journey-next]")!
+      .addEventListener("click", () => stepBy(1));
+    seek.addEventListener("input", () => seekTo(Number(seek.value)));
+    seek.addEventListener("keydown", (event) => {
+      const total = trajectories[benchmark].proposals;
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key))
+        return;
+      event.preventDefault();
+      if (event.key === "Home") seekTo(0);
+      else if (event.key === "End") seekTo(total);
+      else stepBy(event.key === "ArrowLeft" ? -1 : 1);
+    });
+    root.addEventListener("keydown", (event) => {
+      if (
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        (event.target as Element).closest(
+          'button, input, select, textarea, a, [contenteditable="true"], [role="button"]',
+        )
+      )
+        return;
+      if (event.code === "Space") {
+        event.preventDefault();
+        togglePlayback();
+      } else if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        stepBy(event.key === "ArrowLeft" ? -1 : 1);
+      }
+    });
+    root
+      .querySelectorAll<HTMLButtonElement>("[data-journey-speed]")
+      .forEach((button) =>
+        button.addEventListener("click", () => {
+          speed = Number(button.dataset.journeySpeed);
+          syncPlayback();
+        }),
+      );
+    root
+      .querySelectorAll<HTMLButtonElement>("[data-journey-benchmark]")
+      .forEach((button) =>
+        button.addEventListener("click", () => {
+          benchmark = button.dataset.journeyBenchmark as TrajectoryBenchmark;
+          root.dataset.benchmark = benchmark;
+          root
+            .querySelectorAll<HTMLButtonElement>("[data-journey-benchmark]")
+            .forEach((item) =>
+              item.setAttribute("aria-pressed", String(item === button)),
+            );
+          resetPlayback(!reduced.matches);
+        }),
+      );
+    const setViewMode = (mode: typeof viewMode, moveFocus = false) => {
+      playing = false;
+      viewMode = mode;
+      if (
+        mode === "detail" &&
+        benchmark === "gaia" &&
+        selection !== null &&
+        !inDetailRegion(selection)
+      ) {
+        selection = null;
+        deploymentPreference = null;
+        lastPlot = "";
+      }
+      if (moveFocus) svg.focus({ preventScroll: true });
+      requestUpdate();
+    };
+    /* Standalone player entry points, retained for optional restoration.
+    const openPlayer = () => {
+      const player =
+        document.querySelector<HTMLDetailsElement>("#trajectory-player");
+      if (player) player.open = true;
+    };
+    root.addEventListener("click", (event) => {
+      if (
+        event.target instanceof Element &&
+        event.target.closest('a[href="#trajectory-player"]')
+      )
+        openPlayer();
+    });
+    const revealPlayerHash = () => {
+      if (location.hash === "#trajectory-player") openPlayer();
+    };
+    window.addEventListener("hashchange", revealPlayerHash);
+    revealPlayerHash();
+    */
+    observeChartTypography(svg, {
+      compactAxis: { x: 6, y: 244 },
+      onChange: () => {
+        plot.invalidateLabels();
+        lastPlot = "";
+        requestUpdate();
+      },
+    });
+    root.classList.add("is-enhanced");
+    plot.configure(benchmark);
+    renderTimelineTicks();
+    render();
+    // Only visibility starts/stops the clock; scroll position never sets an iteration.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[entries.length - 1];
+        if (!entry) return;
+        inView = entry.isIntersecting && entry.intersectionRatio >= 0.98;
+        if (!inView) settleInspector();
+        lastFrameTime = 0;
+        requestUpdate();
+      },
+      { threshold: [0, 0.98, 1] },
+    );
+    observer.observe(svg);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) settleInspector();
+      lastFrameTime = 0;
+      requestUpdate();
+    });
+    window.addEventListener(
+      "resize",
+      () => {
+        settleInspector();
+        lastPlot = "";
+        plot.invalidateLabels();
+        requestUpdate();
+      },
+      { passive: true },
+    );
+    document.fonts.ready.then(() => {
+      lastPlot = "";
+      plot.invalidateLabels();
+      update();
+    });
+    reduced.addEventListener("change", () => {
+      if (reduced.matches) {
+        playing = false;
+        settleInspector();
+      }
+      lastFrameTime = 0;
+      requestUpdate();
+    });
+    update();
+  }
+</script>

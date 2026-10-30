@@ -1,0 +1,25 @@
+---
+import "../styles/publication-tables.css";
+
+interface Props {
+  id: string;
+  label: string;
+  wide?: boolean;
+}
+const { id, label, wide = false } = Astro.props;
+---
+
+<div
+  class="publication-table-scroll"
+  role="region"
+  aria-label={label}
+  tabindex="0"
+>
+  <table
+    id={id}
+    class:list={["publication-table", { "publication-table-wide": wide }]}
+  >
+    <caption class="sr-only">{label}</caption>
+    <slot />
+  </table>
+</div>

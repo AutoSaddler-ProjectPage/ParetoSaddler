@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { project } from "../data/project";
+import AnimatedMetric from "./AnimatedMetric.astro";
 const base = import.meta.env.BASE_URL;
 // Match the reference pages: lead/corresponding authors first, then centered rows.
 const authorRows = [
@@ -13,7 +14,9 @@ const authorRows = [
 <header class="project-header" id="top">
   <div class="hero-inner">
     <h1>
-      <span class="project-name"><span>Pareto</span>Saddler</span><span
+      <span class="project-name"
+        ><span class="project-name-gradient">ParetoSaddler</span></span
+      ><span
         class="project-subtitle"
         >Pareto-Guided Optimization of Agent Harnesses<br
           class="desktop-break"
@@ -54,13 +57,10 @@ const authorRows = [
     </p>
     <div class="resource-links">
       <a
-        class="resource primary"
+        class="resource"
         href={`${base}paretosaddler.pdf`}
         target="_blank"
-        rel="noopener noreferrer"
-        ><Icon name="ri:file-pdf-2-line" /> Paper <span aria-hidden="true"
-          >↗</span
-        ></a
+        rel="noopener noreferrer"><Icon name="academicons:arxiv" /> Paper</a
       >
       {
         project.codeUrl ? (
@@ -68,8 +68,13 @@ const authorRows = [
             <Icon name="ri:github-line" /> Code
           </a>
         ) : (
-          <span class="resource unavailable" aria-label="Code, coming soon">
-            <Icon name="ri:github-line" /> Code <small>coming soon</small>
+          <span class="resource-slot">
+            <span class="resource unavailable" aria-label="Code, coming soon">
+              <Icon name="ri:github-line" /> Code
+            </span>
+            <small class="resource-status" aria-hidden="true">
+              coming soon
+            </small>
           </span>
         )
       }
@@ -80,59 +85,176 @@ const authorRows = [
           </a>
         )
       }
-      <a class="resource" href="#citation"
-        ><Icon name="ri:double-quotes-l" /> Cite</a
-      >
     </div>
-    <p class="hero-lede">
-      Optimize the harness for <strong>quality and cost.</strong><br />Preserve
-      promising steps. Choose what to deploy at the end.
-    </p>
+    <div class="hero-message">
+      <p class="hero-lede">
+        Preserve valuable <strong>quality–cost trade-offs</strong> during optimization.<br
+        />
+        Select the final harness <strong>at deployment.</strong>
+      </p>
+    </div>
   </div>
   <div class="headline-results">
     <div class="headline-benchmark">
-      <div class="benchmark-name">ClawMark <span>HELD-OUT TEST</span></div>
+      <div class="benchmark-name">ClawMark</div>
       <div class="headline-metrics">
         <div>
-          <strong>+10.49<span> pp</span></strong><p>higher quality</p><small
-            >70.86% → 81.35%</small
-          >
+          <AnimatedMetric value="10.49" prefix="+" unit=" pp" /><p>
+            higher quality
+          </p><small>70.86% → 81.35%</small>
         </div><div>
-          <strong>−13.7<span>%</span></strong><p>execution cost</p><small
-            >$1.17 → $1.01 / task</small
-          >
+          <AnimatedMetric value="13.7" prefix="−" unit="%" /><p>
+            execution cost
+          </p><small>$1.17 → $1.01 / task</small>
         </div>
       </div>
     </div>
     <div class="headline-benchmark">
-      <div class="benchmark-name">GAIA2 <span>HELD-OUT TEST</span></div>
+      <div class="benchmark-name">GAIA2</div>
       <div class="headline-metrics">
         <div>
-          <strong>+6.67<span> pp</span></strong><p>higher quality</p><small
-            >56.22% → 62.89%</small
-          >
+          <AnimatedMetric value="6.67" prefix="+" unit=" pp" /><p>
+            higher quality
+          </p><small>56.22% → 62.89%</small>
         </div><div>
-          <strong>−42.3<span>%</span></strong><p>execution cost</p><small
-            >$0.78 → $0.45 / task</small
-          >
+          <AnimatedMetric value="42.3" prefix="−" unit="%" /><p>
+            execution cost
+          </p><small>$0.78 → $0.45 / task</small>
         </div>
       </div>
     </div>
-    <p class="headline-footnote">
-      ParetoSaddler (quality-extreme) vs. the initial harness · Cost reductions
-      as reported in the paper.
-    </p>
   </div>
 </header>
 
 <style>
   .project-header {
     text-align: center;
-    padding: 64px 24px 0;
+    padding: 64px var(--page-gutter) 0;
+  }
+  /* Match the shared AutoSaddler / ActiveSaddler resource buttons. */
+  .project-header .resource-links {
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .project-header .resource {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 20px;
+    border: 0;
+    border-radius: 9999px;
+    background: #27272a;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28px;
+    white-space: nowrap;
+    box-shadow: none;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .project-header a.resource:hover {
+    background: #000;
+  }
+  .project-header .resource svg {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+  }
+  .project-header .resource svg[data-icon="academicons:arxiv"] {
+    width: 0.88em;
+  }
+  .project-header .resource.unavailable {
+    color: #fff;
+    cursor: default;
+  }
+  .resource-slot {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .resource-status {
+    font-size: 11px;
+    line-height: 14px;
+    color: #71717a;
+    margin-top: 4px;
+  }
+  @media (max-width: 380px) {
+    .project-header .resource {
+      padding-inline: 12px;
+      font-size: 16px;
+    }
   }
   .hero-inner {
-    max-width: 976px;
+    max-width: var(--content-width);
     margin: auto;
+  }
+  .project-name-gradient {
+    color: var(--green);
+  }
+  @media (max-width: 360px) {
+    .project-name {
+      font-size: clamp(40px, calc(15vw - 6px), 48px);
+    }
+  }
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .project-name-gradient {
+      background-image: linear-gradient(
+        90deg,
+        var(--green-dark),
+        var(--green),
+        #5e8e73
+      );
+      background-image: linear-gradient(
+        to right in oklab,
+        var(--green-dark),
+        var(--green),
+        #5e8e73
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+  @media (forced-colors: active) {
+    .project-name-gradient {
+      background: none;
+      color: CanvasText;
+      -webkit-text-fill-color: CanvasText;
+    }
+  }
+  @media print {
+    .project-name-gradient {
+      background: none;
+      color: var(--ink);
+      -webkit-text-fill-color: var(--ink);
+    }
+  }
+  .hero-message {
+    max-width: var(--content-width);
+    margin: 28px auto 30px;
+  }
+  .project-header .hero-lede {
+    margin: 0;
+    color: var(--ink);
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .project-header .hero-lede strong {
+    font-weight: 650;
+  }
+  @media (max-width: 680px) {
+    .hero-message {
+      margin: 24px auto 28px;
+    }
+    .project-header .hero-lede {
+      font-size: 20px;
+    }
   }
   h1 {
     margin-bottom: 16px;

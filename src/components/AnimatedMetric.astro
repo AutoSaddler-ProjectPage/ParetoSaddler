@@ -1,0 +1,195 @@
+---
+interface Props {
+  value: string;
+  prefix: string;
+  unit: string;
+}
+const { value, prefix, unit } = Astro.props;
+const final = `${prefix}${value}`;
+const frameCount = 84;
+const precision = value.split(".")[1]?.length ?? 0;
+const scale = 10 ** precision;
+const target = Math.round(Number(value) * scale);
+const frames = Array.from({ length: frameCount + 1 }, (_, index) => {
+  const progress = index / frameCount;
+  const amount =
+    index === frameCount
+      ? target
+      : Math.min(target - 1, Math.floor(target * progress * (2 - progress)));
+  return `${prefix}${(Math.max(0, amount) / scale).toFixed(precision)}`;
+});
+---
+
+<strong class="animated-metric">
+  <span class="metric-accessible">{final}{unit}</span>
+  <span
+    class="metric-number"
+    data-metric-value={value}
+    data-metric-prefix={prefix}
+    aria-hidden="true"
+  >
+    <span class="metric-placeholder">{final}</span>
+    <span class="metric-value">{final}</span>
+    <span class="metric-roll">
+      <span class="metric-strip" data-metric-steps={frameCount}>
+        {frames.map((frame) => <span class="metric-glyph">{frame}</span>)}
+      </span>
+    </span>
+  </span><span class="metric-unit" aria-hidden="true">{unit}</span>
+</strong>
+
+<style>
+  .animated-metric .metric-number,
+  .animated-metric .metric-number span {
+    font: inherit;
+    letter-spacing: inherit;
+    font-variant-numeric: tabular-nums;
+  }
+  .metric-number {
+    display: inline-grid;
+    position: relative;
+  }
+  .metric-number > span {
+    grid-area: 1 / 1;
+    justify-self: end;
+  }
+  .metric-placeholder {
+    visibility: hidden;
+  }
+  .animated-metric .metric-number .metric-roll {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: clip;
+    line-height: inherit;
+    visibility: hidden;
+    pointer-events: none;
+    user-select: none;
+  }
+  .metric-strip,
+  .metric-glyph {
+    display: block;
+    text-align: right;
+  }
+  .metric-glyph {
+    height: 1lh;
+  }
+  .metric-number[data-metric-rolling] .metric-strip {
+    will-change: transform;
+  }
+  .metric-number[data-metric-ready] .metric-value {
+    visibility: hidden;
+  }
+  .animated-metric .metric-number[data-metric-ready] .metric-roll {
+    visibility: visible;
+  }
+  .animated-metric .metric-accessible {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+  @media print, (prefers-reduced-motion: reduce) {
+    .metric-number[data-metric-ready] .metric-value {
+      visibility: visible;
+    }
+    .animated-metric .metric-number .metric-roll {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const numbers = document.querySelectorAll<HTMLElement>("[data-metric-value]");
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+  if (
+    !reduced.matches &&
+    "IntersectionObserver" in window &&
+    "animate" in Element.prototype
+  ) {
+    type MetricState = {
+      element: HTMLElement;
+      animations: Animation[] | null;
+      visible: boolean;
+      complete: boolean;
+    };
+    const states = new Map<Element, MetricState>(
+      Array.from(numbers, (element) => [
+        element,
+        { element, animations: null, visible: false, complete: false },
+      ]),
+    );
+    const finish = (state: MetricState) => {
+      state.complete = true;
+      state.element.removeAttribute("data-metric-rolling");
+      state.element.removeAttribute("data-metric-ready");
+      state.animations?.forEach((animation) => animation.cancel());
+      state.animations = null;
+      observer.unobserve(state.element);
+    };
+    const sync = (state: MetricState) => {
+      if (state.complete) return;
+      const play = state.visible && !document.hidden;
+      if (!state.animations && play) {
+        state.element.setAttribute("data-metric-rolling", "");
+        const animations = Array.from(
+          state.element.querySelectorAll<HTMLElement>("[data-metric-steps]"),
+          (strip) => {
+            // Percentage offsets preserve exact row boundaries after resizing.
+            const finalOffset =
+              (Number(strip.dataset.metricSteps) / strip.childElementCount) * 100;
+            return strip.animate(
+              [
+                { transform: "translate3d(0, 0, 0)" },
+                {
+                  transform: `translate3d(0, -${finalOffset}%, 0)`,
+                },
+              ],
+              {
+                duration: 1400,
+                easing: `steps(${strip.dataset.metricSteps}, end)`,
+                fill: "forwards",
+              },
+            );
+          },
+        );
+        state.animations = animations;
+        void Promise.allSettled(animations.map((animation) => animation.finished))
+          .then(() => {
+            if (state.animations === animations) finish(state);
+          });
+      }
+      state.animations?.forEach((animation) => {
+        if (play && animation.playState === "paused") animation.play();
+        else if (!play && animation.playState === "running") animation.pause();
+      });
+    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const state = states.get(entry.target)!;
+          state.visible = entry.isIntersecting && entry.intersectionRatio >= 0.6;
+          sync(state);
+        }
+      },
+      { threshold: [0, 0.6] },
+    );
+    numbers.forEach((element) => element.setAttribute("data-metric-ready", ""));
+    void document.fonts.ready.then(() => {
+      if (!reduced.matches) numbers.forEach((element) => observer.observe(element));
+    });
+    document.addEventListener("visibilitychange", () => states.forEach(sync));
+    reduced.addEventListener("change", () => {
+      if (!reduced.matches) return;
+      observer.disconnect();
+      states.forEach(finish);
+    });
+  }
+</script>

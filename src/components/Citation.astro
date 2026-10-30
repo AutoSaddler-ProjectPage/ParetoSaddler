@@ -1,36 +1,8 @@
 ---
+import { Code } from "astro-expressive-code/components";
 import { bibtex } from "../data/project";
 ---
 
 <div class="citation-block">
-  <div class="citation-toolbar">
-    <span>BibTeX <small>· preprint</small></span><button
-      type="button"
-      id="copy-citation">Copy citation</button>
-  </div>
-  <pre><code id="bibtex">{bibtex}</code></pre>
+  <Code code={bibtex} lang="bibtex" />
 </div>
-<p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
-<script>
-  const button = document.querySelector<HTMLButtonElement>("#copy-citation");
-  button?.addEventListener("click", async () => {
-    const citation = document.querySelector("#bibtex")?.textContent ?? "";
-    const status = document.querySelector("#copy-status");
-    try {
-      await navigator.clipboard.writeText(citation);
-      if (status) status.textContent = "Citation copied to clipboard.";
-    } catch {
-      const selection = window.getSelection();
-      const range = document.createRange();
-      const code = document.querySelector("#bibtex");
-      if (code) {
-        range.selectNodeContents(code);
-        selection?.removeAllRanges();
-        selection?.addRange(range);
-      }
-      if (status)
-        status.textContent =
-          "Citation selected. Press Ctrl+C (⌘C on Mac) to copy.";
-    }
-  });
-</script>

@@ -8,73 +8,69 @@ theme: light
 
 import ProjectHeader from "./components/ProjectHeader.astro";
 import ResultsExplorer from "./components/ResultsExplorer.astro";
+import AblationStudies from "./components/AblationStudies.astro";
 import Citation from "./components/Citation.astro";
 import MethodFigure from "./components/MethodFigure.astro";
+import PromotionRule from "./components/PromotionRule.astro";
+import ScrollTrajectory from "./components/ScrollTrajectory.astro";
 import TrajectoryExplorer from "./components/TrajectoryExplorer.astro";
 
 <ProjectHeader />
 
-<section className="abstract-section" id="abstract" aria-labelledby="abstract-heading">
-  <div className="reading-width">
-    <p className="eyebrow">ABSTRACT</p>
-    <h2 id="abstract-heading">Better quality. Lower cost.<br />Room to explore.</h2>
+<section className="abstract-band" id="abstract" aria-labelledby="abstract-heading">
+  <div className="abstract-copy">
+    <h2 id="abstract-heading">Abstract</h2>
 
-Harness optimization can substantially improve LLM agents without modifying model weights, but existing methods primarily optimize response quality. Extending them to joint quality–cost optimization introduces a challenge: applying the deployment preference during intermediate updates can prematurely reject candidates that are valuable for later improvements.
-
-We introduce **ParetoSaddler**, which separates **intermediate candidate promotion** from **final deployment selection**. At each iteration, an optimizer updates a parent harness to produce a candidate, compares the two over repeated executions, and uses Bayesian bootstrap Pareto support to promote candidates showing credible progress in either quality or cost. Promoted candidates receive broader development evaluation and remain available as parents for later optimization steps.
-
-On domain-disjoint test sets, ParetoSaddler improves quality while reducing cost on both ClawMark and GAIA2. Its Pareto-selected harnesses also achieve higher quality at lower cost than quality-only harness optimization. Analyses show that preserving intermediate trade-offs and accounting for execution uncertainty are both essential to this progress.
+Harness optimization can substantially improve LLM agents without modifying model weights, but existing methods primarily optimize response quality. Extending them to joint quality–cost optimization introduces a challenge: applying the deployment preference during intermediate updates can prematurely reject candidates that are valuable for later improvements. We introduce **ParetoSaddler**, which addresses this mismatch by separating **intermediate candidate promotion** from **final deployment selection**. At each iteration, an optimizer updates a parent harness to produce a candidate, and then compares the two over repeated executions and uses Bayesian bootstrap Pareto support to promote candidates showing credible progress in either quality or cost. Promoted candidates receive broader development evaluation and remain available as parents for later optimization steps. We evaluate ParetoSaddler on ClawMark and GAIA2 using domain-disjoint splits. On ClawMark, ParetoSaddler improves quality from **70.86% to 81.35%** while reducing cost from **$1.17 to $1.01** per task; on GAIA2, it improves quality from **56.22% to 62.89%** while reducing cost from **$0.78 to $0.45** per task. The Pareto-selected harnesses also achieve higher quality at lower cost than quality-only harness optimization. Analysis shows that Pareto-aware optimization retains intermediate candidates that would be discarded by deployment preference but can support later improvements, while Bayesian bootstrap screening filters out candidates whose gains are weakly supported across runs.
 
   </div>
 </section>
 
 <section className="section-shell" id="method" aria-labelledby="method-heading">
   <div className="section-heading">
-    <p className="eyebrow">01 / METHOD</p>
-    <h2 id="method-heading">Explore now. Select at deployment.</h2>
-    <p>A candidate can be a useful stepping stone before it becomes the harness you want to deploy.</p>
+    <h2 id="method-heading">Method Overview</h2>
   </div>
   <MethodFigure />
   <ol className="method-steps">
-    <li><span className="step-number">01</span><h3>Execute repeatedly</h3><p>Run the parent and candidate multiple times. Keep quality and token cost paired for each execution to expose persistent failures, unstable behavior, and inefficiency.</p></li>
-    <li><span className="step-number">02</span><h3>Promote credible progress</h3><p>Bayesian bootstrap draws estimate support for improving either quality or cost, with loose safeguards against regression in the other objective.</p></li>
-    <li><span className="step-number">03</span><h3>Retain, refine, then select</h3><p>Evaluate promoted candidates on the development set. Retain all evaluated candidates, including those outside the current Pareto archive, for future refinement.</p></li>
+    <li><h3>Execute repeatedly</h3><p>Run the parent and candidate multiple times. Keep quality and token cost paired for each execution to expose persistent failures, unstable behavior, and inefficiency.</p></li>
+    <li><h3>Promote credible progress</h3><p>Bayesian bootstrap draws estimate support for improving either quality or cost, with loose safeguards against regression in the other objective.</p></li>
+    <li><h3>Retain, optimize, then select</h3><p>Evaluate promoted candidates on the development set. Retain all evaluated candidates, including those outside the current Pareto archive, for later optimization steps.</p></li>
   </ol>
   <aside className="principle">
-    <span className="principle-label">THE KEY DISTINCTION</span>
     <p>Deployment preferences can guide the search.<br /><strong>They do not act as a hard intermediate filter.</strong></p>
   </aside>
   <details className="technical-detail">
     <summary>Inside the statistical promotion rule</summary>
+    <PromotionRule />
+    <details className="promotion-equations">
+      <summary>Definition and experimental settings</summary>
     <div>
       <p>Within each task and harness, draw Dirichlet weights over repeated runs. Apply the same weight to each run’s quality and cost, then average tasks equally. A draw supports promotion if:</p>
       <p className="rule">(ΔQ &gt; 0 and ΔC ≤ ε<sub>C</sub>) or (ΔC &lt; 0 and ΔQ ≥ −ε<sub>Q</sub>)</p>
       <p>ΔQ is the absolute quality change; ΔC is the relative cost change. Promote when the fraction of supporting draws is at least γ. Experiments use <strong>3 runs/task, 10,000 draws, γ = 0.7, ε<sub>Q</sub> = 0.1, and ε<sub>C</sub> = ∞</strong>. These are local safeguards, separate from the final deployment constraint.</p>
     </div>
+    </details>
   </details>
 </section>
 
 <section className="optimization-section" id="trajectories" aria-labelledby="trajectories-heading">
-  <div className="section-shell">
-  <div className="section-heading">
-    <p className="eyebrow">02 / OPTIMIZATION</p>
-    <h2 id="trajectories-heading">Keep the paths that lead further.</h2>
-    <p>Watch each proposal change the harness, its quality–cost position, and the evolving Pareto set. Follow all 17 ClawMark or 25 GAIA2 iterations, including proposals rejected during screening.</p>
-  </div>
-  <TrajectoryExplorer />
-  <div className="case-study">
-    <div><p className="eyebrow">A USEFUL STEPPING STONE</p><h3>When a temporary cost increase<br />unlocks a better solution.</h3></div>
-    <div><p>In the ClawMark MinCost run, iteration I-11 improved mini-batch quality from <strong>83.65% to 87.62%</strong>, while increasing cost by <strong>10.5%</strong>. A deployment-oriented MinCost gate would reject it.</p><p>Pareto promotion retained the update for development evaluation and further refinement toward I-14 and I-16. In the controlled comparison, the Pareto gate promoted <strong>11 candidates versus 3</strong>, reaching a better final test operating point.</p></div>
-  </div>
-  </div>
+  <ScrollTrajectory>
+    <div slot="intro" className="section-heading">
+      <h2 id="trajectories-heading">Optimization Trajectories</h2>
+    </div>
+  </ScrollTrajectory>
+  {/* Standalone iteration player — retained for optional restoration.
+  <details className="technical-detail" id="trajectory-player">
+    <summary>Open the full iteration player and patch notes</summary>
+    <TrajectoryExplorer />
+  </details>
+  */}
 </section>
 
 <section className="results-section" id="results" aria-labelledby="results-heading">
   <div className="section-shell">
     <div className="section-heading">
-      <p className="eyebrow">03 / RESULTS</p>
-      <h2 id="results-heading">A stronger quality–cost trade-off.</h2>
-      <p>Harnesses selected on development data, evaluated on unseen domains. Explore the held-out test results below.</p>
+      <h2 id="results-heading">Results</h2>
     </div>
     <ResultsExplorer />
     <details className="technical-detail">
@@ -82,7 +78,7 @@ On domain-disjoint test sets, ParetoSaddler improves quality while reducing cost
       <div>
         <p><strong>ClawMark:</strong> OpenClaw with GPT-5.4 (high reasoning); quality is normalized stage-0 rubric score. <strong>GAIA2:</strong> the default ReAct-style harness with GPT-5.5 (medium reasoning); quality is Pass@1. Both use domain-disjoint training, development, and test splits.</p>
         <p>ParetoSaddler is instantiated on AutoSaddler. All optimizers use GPT-5.5 at xhigh reasoning effort through the GitHub Copilot SDK. Cost is LLM token cost in USD per task under a fixed price card. Values are mean ± sample standard deviation over three test repeats.</p>
-        <p><strong>PS-Pareto Q / C:</strong> quality- and cost-extreme harnesses selected from the <em>development</em> Pareto set; their test ordering can differ. <strong>PS-MinCost:</strong> cost minimization with development quality constrained to no more than 10 percentage points below the initial harness. MH denotes Meta-Harness; AS denotes the quality-only AutoSaddler adaptation.</p>
+        <p><strong>PS-Pareto<sup>Q</sup> / PS-Pareto<sup>C</sup>:</strong> quality- and cost-extreme harnesses selected from the <em>development</em> Pareto set; their test ordering can differ. MH denotes Meta-Harness; AS denotes the quality-only AutoSaddler adaptation.</p>
       </div>
     </details>
   </div>
@@ -91,24 +87,15 @@ On domain-disjoint test sets, ParetoSaddler improves quality while reducing cost
 <section className="ablation-section" id="analysis" aria-labelledby="analysis-heading">
   <div className="section-shell">
     <div className="section-heading">
-      <p className="eyebrow">04 / ANALYSIS</p>
-      <h2 id="analysis-heading">What makes the progress possible?</h2>
-      <p>Controlled ClawMark ablations isolate the value of the promotion gate, repeated execution, and statistical screening.</p>
+      <h2 id="analysis-heading">Ablation Studies</h2>
     </div>
-    <div className="ablation-grid">
-      <article><span className="analysis-index">RQ1</span><h3>Preserve intermediate trade-offs</h3><p>Using a Pareto local gate instead of a deployment-oriented MinCost gate preserves candidates that can support later gains.</p><dl><div><dt>MinCost gate</dt><dd>73.95% <span>/ $0.90</span></dd></div><div className="better"><dt>Pareto gate</dt><dd>75.16% <span>/ $0.82</span></dd></div></dl><small>PS-MinCost · test quality / cost</small></article>
-      <article><span className="analysis-index">RQ2</span><h3>Learn from repeated runs</h3><p>Three runs expose persistent failures, mixed outcomes, and efficiency contrasts that a single execution cannot show.</p><dl><div><dt>Single-run</dt><dd>75.71% <span>/ $0.97</span></dd></div><div className="better"><dt>Three-run</dt><dd>81.35% <span>/ $1.01</span></dd></div></dl><small>PS-Pareto Q · test quality / cost</small></article>
-      <article><span className="analysis-index">RQ3</span><h3>Screen for statistical support</h3><p>Bayesian screening filters apparent gains that are weakly supported across repeated executions, improving the final operating point.</p><dl><div><dt>Mean-based</dt><dd>76.53% <span>/ $1.15</span></dd></div><div className="better"><dt>Bayesian</dt><dd>81.35% <span>/ $1.01</span></dd></div></dl><small>PS-Pareto Q · test quality / cost</small></article>
-    </div>
-    <p className="section-note">Ablation results use different optimization settings as labeled. Full uncertainty estimates and additional case studies are in Section 5.3 and the appendices of the paper.</p>
+    <AblationStudies />
   </div>
 </section>
 
 <section className="section-shell citation-section" id="citation" aria-labelledby="citation-heading">
   <div className="section-heading">
-    <p className="eyebrow">REFERENCE</p>
-    <h2 id="citation-heading">Citation</h2>
-    <p>If you find this work useful, please cite ParetoSaddler.</p>
+    <h2 id="citation-heading">BibTeX</h2>
   </div>
   <Citation />
 </section>

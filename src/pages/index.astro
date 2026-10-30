@@ -1,6 +1,7 @@
 ---
 import { Font } from "astro:assets";
 import "../styles/global.css";
+import "../styles/figure-ui.css";
 import { Content, frontmatter } from "../paper.mdx";
 const { title, description, favicon, thumbnail } = frontmatter;
 const base = import.meta.env.BASE_URL;
@@ -44,29 +45,5 @@ const socialImage = Astro.site
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <main id="main"><Content /></main>
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <div>
-          <a class="footer-brand" href="#top">ParetoSaddler</a><p>
-            Higher quality. Lower cost. Better harnesses.
-          </p>
-        </div>
-        <nav aria-label="Related research">
-          <span>THE SADDLER SERIES</span><a
-            href="https://autosaddler-projectpage.github.io/">AutoSaddler ↗</a
-          ><a href="https://autosaddler-projectpage.github.io/activesaddler/"
-            >ActiveSaddler ↗</a
-          ><a href="#top" aria-current="page">ParetoSaddler</a>
-        </nav>
-      </div>
-      <div class="footer-bottom">
-        <span>Research preprint · 2026</span><p>
-          Built on <a
-            href="https://research-template.roman.technology"
-            rel="nofollow">Roman Hauksson-Neill’s project page template</a
-          >.
-        </p><a href="#top">Back to top ↑</a>
-      </div>
-    </footer>
   </body>
 </html>

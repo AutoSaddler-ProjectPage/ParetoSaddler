@@ -1,0 +1,28 @@
+---
+interface Props {
+  mean: number;
+  deviation?: number;
+  emphasis?: "best" | "second";
+  alignDecimals?: boolean;
+}
+const { mean, deviation, emphasis, alignDecimals = false } = Astro.props;
+const [integer, fraction] = mean.toFixed(2).split(".");
+---
+
+<span
+  class:list={[
+    "result-value",
+    emphasis && `result-value-${emphasis}`,
+    { "result-value-aligned": alignDecimals },
+  ]}
+>
+  <span class="result-mean">{
+    alignDecimals ? (
+      <><span class="result-integer">{integer}</span><span class="result-fraction">.{fraction}</span></>
+    ) : mean.toFixed(2)
+  }</span>{
+    deviation !== undefined && (
+      <span class="result-deviation"> ± {deviation.toFixed(2)}</span>
+    )
+  }
+</span>
