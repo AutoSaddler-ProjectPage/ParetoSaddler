@@ -2,10 +2,9 @@
 
 Project page for **ParetoSaddler: Pareto-Guided Optimization of Agent Harnesses for Quality and Cost**.
 
-[Project page](https://felixqxz.github.io/paretosaddler-proj/) · [Code](https://github.com/microsoft/AutoSaddler/tree/feat/paretosaddler)
+[Project page](https://autosaddler-projectpage.github.io/paretosaddler-proj/) · [Code](https://github.com/microsoft/AutoSaddler/tree/feat/paretosaddler)
 
-Built with Astro 6, MDX, React 19, and Tailwind CSS v4, using [Roman Hauksson-Neill's academic project page template](https://github.com/RomanHauksson/academic-project-astro-template). The presentation follows the [AutoSaddler](https://autosaddler-projectpage.github.io/) and [ActiveSaddler](https://autosaddler-projectpage.github.io/activesaddler/) project pages.
-
+Built with Astro 6, MDX, React 19, and Tailwind CSS v4, using [Roman Hauksson-Neill's academic project page template](https://github.com/RomanHauksson/academic-project-astro-template).
 ## Develop
 
 Use Node.js 24 or later.
