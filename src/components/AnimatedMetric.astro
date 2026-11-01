@@ -96,6 +96,32 @@ const frames = Array.from({ length: frameCount + 1 }, (_, index) => {
     white-space: nowrap;
     border: 0;
   }
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .metric-value,
+    .metric-glyph {
+      background-image: var(--brand-gradient);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+  @media (forced-colors: active) {
+    .metric-value,
+    .metric-glyph {
+      background: none;
+      color: CanvasText;
+      -webkit-text-fill-color: CanvasText;
+    }
+  }
+  @media print {
+    .metric-value,
+    .metric-glyph {
+      background: none;
+      color: var(--green);
+      -webkit-text-fill-color: var(--green);
+    }
+  }
   @media print, (prefers-reduced-motion: reduce) {
     .metric-number[data-metric-ready] .metric-value {
       visibility: visible;

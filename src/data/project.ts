@@ -2,8 +2,7 @@ export const project = {
   title:
     "ParetoSaddler: Pareto-Guided Optimization of Agent Harnesses for Quality and Cost",
   year: 2026,
-  // Replace with verified public release URLs when available.
-  codeUrl: "",
+  codeUrl: "https://github.com/microsoft/AutoSaddler/tree/feat/paretosaddler",
   arxivUrl: "",
   authors: [
     { name: "Xingzhi Qian", affiliation: "1", note: "*" },

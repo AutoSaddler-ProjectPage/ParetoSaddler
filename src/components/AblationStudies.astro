@@ -25,14 +25,25 @@ const screeningQualityGain = (
     <h3 id="gate-ablation-heading" class="publication-heading">
       RQ1: How does Pareto-aware promotion enable better optimization outcomes?
     </h3>
-    <p>
-      <strong
-        >Pareto-aware promotion preserves useful intermediate trade-offs.</strong
-      >
-      In the controlled PS-MinCost comparison, it promotes 11 candidates rather than
-      3 and reaches a final harness with higher test quality and lower cost. Only
-      the local promotion gate is changed.
-    </p>
+    <div class="ablation-summary">
+      <p>
+        <strong
+          >Pareto-aware promotion preserves useful intermediate trade-offs.</strong
+        >
+        In the controlled PS-MinCost ablation, it promotes 11 candidates versus 3
+        under the MinCost gate, reaching higher final test quality at lower cost.
+      </p>
+      <div class="ablation-analysis">
+        <p>
+          I-11 raises mini-batch quality from 83.65% to 87.62% while increasing
+          cost by 10.5%. Retaining this update enables further optimization
+          toward I-14 and I-16, illustrating why <strong
+            >intermediate promotion and deployment selection should remain
+            separate</strong
+          >.
+        </p>
+      </div>
+    </div>
     <div class="ablation-comparison">
       <figure class="ablation-figure">
         <img
@@ -44,28 +55,9 @@ const screeningQualityGain = (
           alt="ClawMark development quality–cost trajectories under Pareto and MinCost local gates. The Pareto trajectory continues through I-11 to later quality gains; an inset compares the final held-out quality and cost."
         />
         <figcaption>
-          Pareto and MinCost local gates lead to different optimization paths.
+          Optimization trajectories under Pareto and MinCost local gates.
         </figcaption>
       </figure>
-    </div>
-    <div class="ablation-analysis">
-      <p>
-        The search paths diverge around <strong>I-11</strong>. Its mini-batch
-        quality rises from 83.65% to 87.62%, while cost increases by 10.5%. A
-        MinCost gate would reject this update. Pareto promotion keeps it
-        available for broader evaluation and later optimization toward I-14 and
-        I-16.
-      </p>
-      <p>
-        A quality-only gate can also discard useful candidates. In the PS-Pareto
-        run, I-7 lowers mini-batch cost by 17.22% with a 1.33-point quality
-        decrease. Development evaluation instead shows higher quality (72.94%
-        vs. 72.27%) and lower cost ($0.88 vs. $1.13). These cases illustrate why <strong
-          >intermediate promotion and final deployment selection should remain
-          separate</strong
-        >: a locally unfavorable trade-off can still support a better final
-        harness.
-      </p>
     </div>
   </article>
 
@@ -79,55 +71,69 @@ const screeningQualityGain = (
     </h3>
     <p>
       <strong
-        >Repeated execution improves the evidence used to update a harness.</strong
-      >
-      Moving from one to three executions per task during optimization raises mean
-      test quality by {repeatedQualityGain} points at the quality-oriented endpoint.
-      The cost-oriented endpoint also reaches higher quality at lower cost.
+        >Repeated execution provides richer evidence for diagnosis and patch
+        verification.</strong
+      > Persistent failures, mixed outcomes, and efficiency contrasts reveal behavior
+      a single run can miss.
     </p>
     <div class="ablation-comparison">
-      <PublicationTable
-        id="execution-ablation-table"
-        label="ClawMark single-run versus three-run PS-Pareto ablation"
-      >
-        <thead>
-          <tr>
-            <th scope="col">Setting</th>
-            <th scope="col">Quality (%) ↑</th>
-            <th scope="col">Cost per task ($) ↓</th>
-          </tr>
-        </thead>
-        {
-          repeatedExecutionAblation.map((row) => (
-            <tbody class:list={{ "is-ours": row.preferred }}>
-              <tr>
-                <th scope="row" class="method-label">
-                  {row.label}
-                  <sup>{row.endpoint}</sup>
-                </th>
-                <td>
-                  <ResultValue
-                    mean={row.values[0]}
-                    deviation={row.values[1]}
-                    emphasis={
-                      row.preferred && row.endpoint === "Q" ? "best" : undefined
-                    }
-                  />
-                </td>
-                <td>
-                  <ResultValue
-                    mean={row.values[2]}
-                    deviation={row.values[3]}
-                    emphasis={
-                      row.preferred && row.endpoint === "C" ? "best" : undefined
-                    }
-                  />
-                </td>
-              </tr>
-            </tbody>
-          ))
-        }
-      </PublicationTable>
+      <div class="ablation-evidence">
+        <PublicationTable
+          id="execution-ablation-table"
+          label="ClawMark single-run versus three-run PS-Pareto ablation"
+        >
+          <thead>
+            <tr>
+              <th scope="col">Setting</th>
+              <th scope="col">Quality (%) ↑</th>
+              <th scope="col">Cost per task ($) ↓</th>
+            </tr>
+          </thead>
+          {
+            repeatedExecutionAblation.map((row) => (
+              <tbody class:list={{ "is-ours": row.preferred }}>
+                <tr>
+                  <th scope="row" class="method-label">
+                    {row.label}
+                    <sup>{row.endpoint}</sup>
+                  </th>
+                  <td>
+                    <ResultValue
+                      mean={row.values[0]}
+                      deviation={row.values[1]}
+                      emphasis={
+                        row.preferred && row.endpoint === "Q"
+                          ? "best"
+                          : undefined
+                      }
+                    />
+                  </td>
+                  <td>
+                    <ResultValue
+                      mean={row.values[2]}
+                      deviation={row.values[3]}
+                      emphasis={
+                        row.preferred && row.endpoint === "C"
+                          ? "best"
+                          : undefined
+                      }
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            ))
+          }
+        </PublicationTable>
+        <div class="ablation-analysis">
+          <p>
+            Three-run optimization raises quality-oriented test quality by
+            <strong>{repeatedQualityGain} points</strong> and improves the cost-oriented
+            endpoint. This end-to-end comparison uses additional task executions;
+            it is
+            <strong>not compute-matched</strong>.
+          </p>
+        </div>
+      </div>
       <figure class="ablation-figure">
         <img
           src={`${figures}ablation-repeated-executions.svg`}
@@ -138,26 +144,9 @@ const screeningQualityGain = (
           alt="Quality versus cost for six executions of each of four sampled ClawMark tasks. Marker colors distinguish tasks, and the legend reports within-task coefficients of variation for quality and cost."
         />
         <figcaption>
-          Six executions per task reveal variation in both quality and cost.
+          Run-to-run quality and cost variation on four tasks.
         </figcaption>
       </figure>
-    </div>
-    <div class="ablation-analysis">
-      <p>
-        Repeated runs expose <strong
-          >persistent failures, mixed outcomes, and efficiency contrasts</strong
-        >. They reveal recurring defects, unstable behavior on the same task,
-        and unnecessary execution cost even when every run succeeds. Comparing
-        the parent and candidate repeatedly also helps verify whether a patch's
-        improvement persists.
-      </p>
-      <p>
-        For example, three successful research-audit executions cost $0.72,
-        $1.58, and $0.69. The expensive trajectory makes three subagent-spawn
-        calls; the others make none. A single passing trajectory would miss this
-        contrast. Repeated observations give the optimizer concrete alternatives
-        to investigate when reducing execution overhead.
-      </p>
     </div>
   </article>
 
@@ -172,58 +161,67 @@ const screeningQualityGain = (
     </h3>
     <p>
       <strong
-        >Bayesian screening reaches higher mean quality at lower cost at both
-        endpoints.</strong
-      >
-      At the quality-oriented endpoint, it gains {screeningQualityGain} test quality
-      points while reducing cost from $1.15 to $1.01 per task. The remaining optimization
-      setup is held fixed.
+        >Bayesian screening filters gains weakly supported across repeated runs.</strong
+      > It reaches higher test quality at lower cost than mean-based screening at
+      both endpoints.
     </p>
     <div class="ablation-comparison">
-      <PublicationTable
-        id="screening-ablation-table"
-        label="ClawMark mean-based versus Bayesian screening under PS-Pareto"
-      >
-        <thead>
-          <tr>
-            <th scope="col">Setting</th>
-            <th scope="col" class="metric-heading">Metric</th>
-            <th scope="col">Mean-based</th>
-            <th scope="col" class="preferred-cell">Bayesian</th>
-          </tr>
-        </thead>
-        {
-          screeningAblation.map((row) => (
-            <tbody>
-              {([0, 2] as const).map((metric) => (
-                <tr>
-                  {metric === 0 && (
-                    <th rowspan="2" scope="rowgroup" class="method-label">
-                      PS-Pareto<sup>{row.endpoint}</sup>
+      <div class="ablation-evidence">
+        <PublicationTable
+          id="screening-ablation-table"
+          label="ClawMark mean-based versus Bayesian screening under PS-Pareto"
+        >
+          <thead>
+            <tr>
+              <th scope="col">Setting</th>
+              <th scope="col" class="metric-heading">Metric</th>
+              <th scope="col">Mean-based</th>
+              <th scope="col" class="preferred-cell">Bayesian</th>
+            </tr>
+          </thead>
+          {
+            screeningAblation.map((row) => (
+              <tbody>
+                {([0, 2] as const).map((metric) => (
+                  <tr>
+                    {metric === 0 && (
+                      <th rowspan="2" scope="rowgroup" class="method-label">
+                        PS-Pareto<sup>{row.endpoint}</sup>
+                      </th>
+                    )}
+                    <th scope="row" class="metric-label">
+                      {metric === 0 ? "Qual. ↑" : "Cost ↓"}
                     </th>
-                  )}
-                  <th scope="row" class="metric-label">
-                    {metric === 0 ? "Qual. ↑" : "Cost ↓"}
-                  </th>
-                  <td>
-                    <ResultValue
-                      mean={row.meanBased[metric]}
-                      deviation={row.meanBased[metric + 1]}
-                    />
-                  </td>
-                  <td class="preferred-cell">
-                    <ResultValue
-                      mean={row.bayesian[metric]}
-                      deviation={row.bayesian[metric + 1]}
-                      emphasis="best"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          ))
-        }
-      </PublicationTable>
+                    <td>
+                      <ResultValue
+                        mean={row.meanBased[metric]}
+                        deviation={row.meanBased[metric + 1]}
+                      />
+                    </td>
+                    <td class="preferred-cell">
+                      <ResultValue
+                        mean={row.bayesian[metric]}
+                        deviation={row.bayesian[metric + 1]}
+                        emphasis="best"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            ))
+          }
+        </PublicationTable>
+        <div class="ablation-analysis">
+          <p>
+            I-12 passes the mean-based gate but has only <strong
+              >0.55 support, below γ = 0.7</strong
+            >. In the separate end-to-end ablation, Bayesian screening gains <strong
+              >{screeningQualityGain} quality points</strong
+            >
+            at the quality-oriented endpoint while reducing cost from $1.15 to $1.01.
+          </p>
+        </div>
+      </div>
       <figure class="ablation-figure">
         <img
           src={`${figures}ablation-promotion-threshold.svg`}
@@ -234,29 +232,10 @@ const screeningQualityGain = (
           alt="Number of archived proposals that would be promoted on ClawMark and GAIA2 as the promotion threshold increases from 0.5 to 0.95. A shaded band marks the experimental setting of 0.7."
         />
         <figcaption>
-          Retrospective threshold replay; the shaded region marks γ = 0.7,
-          within a locally stable region on both benchmarks.
+          Retrospective threshold replay: γ = 0.7 is locally stable on both
+          benchmarks.
         </figcaption>
       </figure>
-    </div>
-    <div class="ablation-analysis">
-      <p>
-        <strong>Averages can conceal uneven task-level changes.</strong>
-        Replaying mean-based screening on the same 17 PS-Pareto candidates would promote
-        14, compared with 12 under Bayesian screening. I-12 reduces mean mini-batch
-        cost by 7.19% with a 5.55-point quality loss, satisfying the configured mean-based
-        rule. Its bootstrap support is only 0.55, below the 0.7 promotion threshold.
-      </p>
-      <p>
-        Nearly all of I-12's savings come from one research-assistant task where
-        quality drops sharply; the other two tasks become more expensive. On the
-        development set, I-12 is 2.80 quality points worse and 10.66% more
-        expensive than its parent. This illustrates the value of
-        <strong
-          >screening for statistical support across repeated executions</strong
-        >. The separate end-to-end comparison above measures how the screening
-        rule affects subsequent search and the final selected harnesses.
-      </p>
     </div>
   </article>
 </div>

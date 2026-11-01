@@ -215,14 +215,29 @@
   gap: 36px;
 }
 .ablation-study {
-  display: flow-root;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 300px);
+  grid-template-areas:
+    "heading heading"
+    "intro intro"
+    "evidence figure";
+  gap: 16px 28px;
+  align-items: start;
   min-width: 0;
 }
+.ablation-study > .publication-heading {
+  grid-area: heading;
+  margin: 0;
+}
+.ablation-study > p:not(.publication-note) {
+  grid-area: intro;
+}
 .ablation-study > p:not(.publication-note),
+.ablation-summary > p,
 .ablation-analysis p {
   max-width: var(--content-width);
   color: var(--muted);
-  margin: 0 0 22px;
+  margin: 0;
   font-size: 18px;
   line-height: 1.8;
   text-wrap: pretty;
@@ -234,11 +249,17 @@
 .ablation-comparison {
   display: contents;
 }
-.ablation-comparison > .publication-table-scroll {
-  float: left;
-  width: calc(50% - 16px);
+.ablation-evidence {
+  grid-area: evidence;
+  display: grid;
+  gap: 16px;
+  align-self: center;
   min-width: 0;
-  margin-bottom: 18px;
+}
+.ablation-evidence > .publication-table-scroll {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
 }
 .ablation-comparison .publication-table {
   min-width: 0;
@@ -253,56 +274,66 @@
   line-height: 1.4;
 }
 .ablation-figure {
-  float: right;
-  width: calc(50% - 16px);
+  grid-area: figure;
+  align-self: center;
+  justify-self: center;
+  width: 100%;
+  max-width: 300px;
   min-width: 0;
-  margin: 0 0 18px 32px;
+  margin: 0;
 }
 .ablation-figure img {
   width: 100%;
   height: auto;
 }
 .ablation-figure figcaption {
-  margin-top: 12px;
+  margin-top: 8px;
   color: var(--muted);
   font-size: 15px;
   line-height: 1.75;
   text-wrap: pretty;
 }
 .ablation-analysis {
-  margin-top: 0;
+  min-width: 0;
+  margin: 0;
 }
-.ablation-analysis p {
-  margin-bottom: 16px;
+.ablation-summary {
+  grid-area: summary;
+  display: grid;
+  gap: 16px;
+  align-self: center;
+  min-width: 0;
 }
-.ablation-analysis p:last-child {
-  margin-bottom: 0;
+#rq1 {
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  grid-template-areas:
+    "heading heading"
+    "summary figure";
+  align-content: center;
 }
-:is(#rq2, #rq3) .ablation-figure {
-  max-width: 360px;
-  justify-self: center;
-}
-@media (min-width: 901px) {
-  :is(#rq2, #rq3) .ablation-figure {
-    width: min(36%, 360px);
-  }
-  :is(#rq2, #rq3) .ablation-comparison > .publication-table-scroll {
-    width: calc(100% - min(36%, 360px) - 32px);
-  }
+#rq1 .ablation-figure {
+  max-width: 340px;
 }
 @media (max-width: 900px) {
-  .ablation-comparison {
-    display: grid;
+  .ablation-study,
+  #rq1 {
     grid-template-columns: minmax(0, 1fr);
-    gap: 18px;
-    width: min(100%, 520px);
-    margin: 20px auto;
+    grid-template-areas:
+      "heading"
+      "intro"
+      "evidence"
+      "figure";
   }
-  .ablation-comparison > .publication-table-scroll,
-  .ablation-figure {
-    float: none;
+  #rq1 {
+    grid-template-areas:
+      "heading"
+      "summary"
+      "figure";
+  }
+  .ablation-evidence {
     width: 100%;
-    margin: 0;
+    max-width: 520px;
+    justify-self: center;
   }
 }
 @media (max-width: 680px) {

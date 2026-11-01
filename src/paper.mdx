@@ -11,7 +11,7 @@ import ResultsExplorer from "./components/ResultsExplorer.astro";
 import AblationStudies from "./components/AblationStudies.astro";
 import Citation from "./components/Citation.astro";
 import MethodFigure from "./components/MethodFigure.astro";
-import PromotionRule from "./components/PromotionRule.astro";
+import PromotionDisclosure from "./components/PromotionDisclosure.astro";
 import ScrollTrajectory from "./components/ScrollTrajectory.astro";
 import TrajectoryExplorer from "./components/TrajectoryExplorer.astro";
 
@@ -31,26 +31,30 @@ Harness optimization can substantially improve LLM agents without modifying mode
     <h2 id="method-heading">Method Overview</h2>
   </div>
   <MethodFigure />
+  {/* Stage names and ordering follow Figure 2; descriptions follow Section 4. */}
   <ol className="method-steps">
-    <li><h3>Execute repeatedly</h3><p>Run the parent and candidate multiple times. Keep quality and token cost paired for each execution to expose persistent failures, unstable behavior, and inefficiency.</p></li>
-    <li><h3>Promote credible progress</h3><p>Bayesian bootstrap draws estimate support for improving either quality or cost, with loose safeguards against regression in the other objective.</p></li>
-    <li><h3>Retain, optimize, then select</h3><p>Evaluate promoted candidates on the development set. Retain all evaluated candidates, including those outside the current Pareto archive, for later optimization steps.</p></li>
+    <li>
+      <h3>Repeated Execution and Joint Evidence</h3>
+      <p>Use repeated parent executions, trajectories, and paired quality–cost observations to construct a candidate. Screen the parent and candidate under the same evaluation protocol, with R executions per task.</p>
+    </li>
+    <li>
+      <h3>Statistical Pareto Promotion</h3>
+      <p>Use Bayesian bootstrap draws to assess support for improvement in either quality or cost, subject to local allowances. Promote the candidate when the fraction of draws satisfying the promotion event is at least γ.</p>
+    </li>
+    <li>
+      <h3>Development Evaluation and Candidate Retention</h3>
+      <p>Evaluate promoted candidates on the development set with R executions per task. Update the empirical Pareto archive while retaining all development-evaluated candidates, including those outside the archive.</p>
+    </li>
+    <li>
+      <h3>Continued Optimization</h3>
+      <p>Use the development-evaluated set, Pareto archive, accumulated optimization state, and deployment preference to choose the next parent. The preference may guide the search but does not act as a hard intermediate filter.</p>
+    </li>
+    <li>
+      <h3>Deployment Selection</h3>
+      <p>After the optimization budget is exhausted, apply the deployment preference to the final development-evaluated set. Return a single harness under weighted-sum or constrained selection, or the empirical Pareto set for frontier discovery.</p>
+    </li>
   </ol>
-  <aside className="principle">
-    <p>Deployment preferences can guide the search.<br /><strong>They do not act as a hard intermediate filter.</strong></p>
-  </aside>
-  <details className="technical-detail">
-    <summary>Inside the statistical promotion rule</summary>
-    <PromotionRule />
-    <details className="promotion-equations">
-      <summary>Definition and experimental settings</summary>
-    <div>
-      <p>Within each task and harness, draw Dirichlet weights over repeated runs. Apply the same weight to each run’s quality and cost, then average tasks equally. A draw supports promotion if:</p>
-      <p className="rule">(ΔQ &gt; 0 and ΔC ≤ ε<sub>C</sub>) or (ΔC &lt; 0 and ΔQ ≥ −ε<sub>Q</sub>)</p>
-      <p>ΔQ is the absolute quality change; ΔC is the relative cost change. Promote when the fraction of supporting draws is at least γ. Experiments use <strong>3 runs/task, 10,000 draws, γ = 0.7, ε<sub>Q</sub> = 0.1, and ε<sub>C</sub> = ∞</strong>. These are local safeguards, separate from the final deployment constraint.</p>
-    </div>
-    </details>
-  </details>
+  <PromotionDisclosure />
 </section>
 
 <section className="optimization-section" id="trajectories" aria-labelledby="trajectories-heading">

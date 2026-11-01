@@ -2,7 +2,6 @@
 import { Icon } from "astro-icon/components";
 import { project } from "../data/project";
 import AnimatedMetric from "./AnimatedMetric.astro";
-const base = import.meta.env.BASE_URL;
 // Match the reference pages: lead/corresponding authors first, then centered rows.
 const authorRows = [
   project.authors.slice(0, 5),
@@ -58,31 +57,29 @@ const authorRows = [
     <div class="resource-links">
       <a
         class="resource"
-        href={`${base}paretosaddler.pdf`}
+        href={project.codeUrl}
         target="_blank"
-        rel="noopener noreferrer"><Icon name="academicons:arxiv" /> Paper</a
+        rel="noopener noreferrer"><Icon name="ri:github-line" /> Code</a
       >
       {
-        project.codeUrl ? (
-          <a class="resource" href={project.codeUrl}>
-            <Icon name="ri:github-line" /> Code
-          </a>
-        ) : (
-          <span class="resource-slot">
-            <span class="resource unavailable" aria-label="Code, coming soon">
-              <Icon name="ri:github-line" /> Code
-            </span>
-            <small class="resource-status" aria-hidden="true">
-              coming soon
-            </small>
-          </span>
-        )
-      }
-      {
-        project.arxivUrl && (
-          <a class="resource" href={project.arxivUrl}>
+        project.arxivUrl ? (
+          <a
+            class="resource"
+            href={project.arxivUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <Icon name="academicons:arxiv" /> arXiv
           </a>
+        ) : (
+          <button
+            class="resource"
+            type="button"
+            disabled
+            aria-label="arXiv link not yet available"
+          >
+            <Icon name="academicons:arxiv" /> arXiv
+          </button>
         )
       }
     </div>
@@ -157,6 +154,10 @@ const authorRows = [
   .project-header a.resource:hover {
     background: #000;
   }
+  .project-header .resource:disabled {
+    cursor: default;
+    opacity: 1;
+  }
   .project-header .resource svg {
     width: 1em;
     height: 1em;
@@ -164,21 +165,6 @@ const authorRows = [
   }
   .project-header .resource svg[data-icon="academicons:arxiv"] {
     width: 0.88em;
-  }
-  .project-header .resource.unavailable {
-    color: #fff;
-    cursor: default;
-  }
-  .resource-slot {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .resource-status {
-    font-size: 11px;
-    line-height: 14px;
-    color: #71717a;
-    margin-top: 4px;
   }
   @media (max-width: 380px) {
     .project-header .resource {
@@ -200,18 +186,7 @@ const authorRows = [
   }
   @supports (background-clip: text) or (-webkit-background-clip: text) {
     .project-name-gradient {
-      background-image: linear-gradient(
-        90deg,
-        var(--green-dark),
-        var(--green),
-        #5e8e73
-      );
-      background-image: linear-gradient(
-        to right in oklab,
-        var(--green-dark),
-        var(--green),
-        #5e8e73
-      );
+      background-image: var(--brand-gradient);
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;

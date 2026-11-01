@@ -1,0 +1,188 @@
+---
+import PromotionRule from "./PromotionRule.astro";
+---
+
+<details class="promotion-detail" data-promotion-disclosure>
+  <summary>
+    <span>Statistical promotion rule</span>
+    <svg
+      viewBox="0 0 20 20"
+      width="18"
+      height="18"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="m5 8 5 5 5-5"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"></path>
+    </svg>
+  </summary>
+  <div class="promotion-detail-content" data-disclosure-content>
+    <PromotionRule />
+  </div>
+</details>
+
+<script>
+  const details = document.querySelector<HTMLDetailsElement>(
+    "[data-promotion-disclosure]",
+  );
+  if (details) {
+    const summary = details.querySelector("summary")!;
+    const content = details.querySelector<HTMLElement>(
+      "[data-disclosure-content]",
+    )!;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    let expanded = details.open;
+    let animation: Animation | null = null;
+    let fade: Animation | null = null;
+    const sync = () => {
+      summary.setAttribute("aria-expanded", String(expanded));
+      details.dataset.expanded = String(expanded);
+      content.inert = !expanded;
+    };
+    const settle = () => {
+      details.open = expanded;
+      animation?.cancel();
+      fade?.cancel();
+      animation = fade = null;
+      sync();
+    };
+    const toggle = (next: boolean) => {
+      const height = details.getBoundingClientRect().height;
+      const opacity = getComputedStyle(content).opacity;
+      expanded = next;
+      animation?.cancel();
+      fade?.cancel();
+      animation = fade = null;
+      if (!next) {
+        details.dispatchEvent(new Event("disclosure-closing"));
+        if (content.contains(document.activeElement))
+          summary.focus({ preventScroll: true });
+      }
+      details.open = true;
+      sync();
+      if (reduced.matches || !("animate" in Element.prototype)) {
+        settle();
+        return;
+      }
+      const style = getComputedStyle(details);
+      const border =
+        parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+      const target =
+        summary.getBoundingClientRect().height +
+        border +
+        (next ? content.getBoundingClientRect().height : 0);
+      const active = details.animate(
+        [{ height: `${height}px` }, { height: `${target}px` }],
+        {
+          duration: next ? 340 : 280,
+          easing: "cubic-bezier(.22, 1, .36, 1)",
+          fill: "both",
+        },
+      );
+      animation = active;
+      fade = content.animate(
+        [
+          {
+            opacity:
+              next && height <= summary.offsetHeight + border + 1 ? 0 : opacity,
+          },
+          { opacity: next ? 1 : 0 },
+        ],
+        {
+          duration: next ? 260 : 180,
+          easing: "ease-out",
+          fill: "both",
+        },
+      );
+      active.onfinish = () => {
+        if (animation === active) settle();
+      };
+    };
+    summary.addEventListener("click", (event) => {
+      event.preventDefault();
+      toggle(!expanded);
+    });
+    summary.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        if (!event.repeat) toggle(!expanded);
+      }
+    });
+    details.addEventListener("toggle", () => {
+      if (!animation) {
+        expanded = details.open;
+        sync();
+      }
+    });
+    reduced.addEventListener("change", () => {
+      if (reduced.matches) settle();
+    });
+    window.addEventListener(
+      "resize",
+      () => {
+        if (animation) settle();
+      },
+      { passive: true },
+    );
+    sync();
+  }
+</script>
+
+<style>
+  .promotion-detail {
+    border: 1px solid #e4e4e7;
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden;
+  }
+  .promotion-detail > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 15px 20px;
+    cursor: pointer;
+    list-style: none;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .promotion-detail > summary::-webkit-details-marker {
+    display: none;
+  }
+  .promotion-detail > summary:focus-visible {
+    outline-offset: -4px;
+  }
+  .promotion-detail > summary svg {
+    flex-shrink: 0;
+    color: var(--green);
+    transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .promotion-detail[data-expanded="true"] > summary svg {
+    transform: rotate(180deg);
+  }
+  .promotion-detail:not([data-expanded])[open] > summary svg {
+    transform: rotate(180deg);
+  }
+  .promotion-detail-content {
+    padding: 0 20px 18px;
+  }
+  @media (max-width: 680px) {
+    .promotion-detail > summary {
+      padding: 13px 16px;
+      font-size: 16px;
+    }
+    .promotion-detail-content {
+      padding: 0 16px 16px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .promotion-detail > summary svg {
+      transition: none;
+    }
+  }
+</style>

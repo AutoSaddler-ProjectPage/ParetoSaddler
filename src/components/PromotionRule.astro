@@ -1,17 +1,13 @@
----
-import { promotionEvidence } from "../data/promotion-evidence";
----
-
 <section
   id="promotion-demo"
   class="promotion-demo research-figure"
-  aria-labelledby="promotion-demo-title"
+  aria-label="Statistical promotion rule illustration"
 >
-  <div class="promotion-heading">
-    <div>
-      <h3 id="promotion-demo-title">Promotion Evidence</h3>
-    </div>
-  </div>
+  <p class="promotion-rule">
+    Bayesian bootstrap reweights repeated runs. Count draws where
+    <strong>quality improves</strong>, or
+    <strong>cost falls with at most 10 pp quality loss</strong>.
+  </p>
   <div class="promotion-layout">
     <div class="promotion-distribution">
       <svg
@@ -78,11 +74,6 @@ import { promotionEvidence } from "../data/promotion-evidence";
           <path class="promotion-zero" d="M64 159H528M296 32V286"></path>
           <path class="promotion-allowance" d="M64 201.3333H296"></path>
           <g data-promotion-cloud></g>
-          <circle
-            data-promotion-current
-            r="5"
-            class="promotion-current"
-            visibility="hidden"></circle>
         </g>
         <path class="promotion-axis" d="M64 32V286H528"></path>
         {
@@ -101,11 +92,9 @@ import { promotionEvidence } from "../data/promotion-evidence";
             </text>
           ))
         }
-        <text x="296" y="337" text-anchor="middle"
-          >Relative cost change · lower is better</text
-        >
+        <text x="296" y="337" text-anchor="middle">ΔC</text>
         <text transform="translate(17 159) rotate(-90)" text-anchor="middle"
-          >Quality change (pp)</text
+          >ΔQ</text
         >
         <text x="77" y="50" class="promotion-region-label"
           >Quality improves</text
@@ -115,10 +104,9 @@ import { promotionEvidence } from "../data/promotion-evidence";
         >
       </svg>
       <div class="promotion-plot-legend">
-        <span><i class="promotion-support-key"></i>Supports promotion</span
-        ><span><i></i>Does not support</span>
+        <span><i class="promotion-support-key"></i>Supports promotion</span>
+        <span><i></i>Does not support</span>
       </div>
-
       <div class="promotion-playback">
         <button
           class="promotion-play"
@@ -170,97 +158,42 @@ import { promotionEvidence } from "../data/promotion-evidence";
             disabled
           />
         </div>
-        <span class="promotion-adjust-hint">Drag to adjust the threshold</span>
       </div>
       <div class="promotion-conclusion">
-        <span class="promotion-comparison" data-promotion-comparison>p̂ ≥ γ</span
+        <span class="promotion-comparison" data-promotion-comparison
+          >Promote when p̂ ≥ γ</span
         >
         <div class="promotion-decision" data-promotion-decision>
           Waiting for evidence
         </div>
-        <p class="promotion-explanation" data-promotion-explanation>
-          Reweighting the parent and candidate observations to estimate support.
-        </p>
       </div>
-      <p class="promotion-case-note">
-        Mean cost falls 7.19%, with a 5.55 pp quality loss. The mean-based gate
-        would pass this update.
+      <p class="promotion-settings">
+        3 runs per task · 10,000 draws · no local cost cap.
       </p>
     </aside>
   </div>
-  <details class="promotion-evidence-panel">
-    <summary
-      >Inspect the observations <span>3 tasks · 3 runs per harness</span
-      ></summary
-    >
-    <div class="promotion-evidence">
-      <div
-        class="promotion-task-switch figure-tabs figure-tabs--compact"
-        role="group"
-        aria-label="Inspect screening task"
-      >
-        {
-          promotionEvidence.map((task, index) => (
-            <button
-              type="button"
-              data-promotion-task={index}
-              aria-pressed={index === 0}
-            >
-              {task.name}
-            </button>
-          ))
-        }
-      </div>
-      <div class="promotion-observations">
-        <div class="promotion-run-heading">
-          <span>Quality / cost</span><span data-promotion-weight-draw
-            >Equal weights</span
-          >
-        </div>
-        {
-          (["parent", "candidate"] as const).map((side) => (
-            <div class="promotion-harness" data-promotion-harness={side}>
-              <h4>{side === "parent" ? "Parent" : "Candidate I-12"}</h4>
-              {promotionEvidence[0][side].map(([quality, cost], run) => (
-                <div class="promotion-run" data-promotion-run={run}>
-                  <span class="promotion-run-index">R{run + 1}</span>
-                  <span data-promotion-observation>
-                    {quality}% / ${cost.toFixed(2)}
-                  </span>
-                  <div class="promotion-weight" aria-hidden="true">
-                    <i style="transform: scaleX(0.333333)" />
-                  </div>
-                  <span data-promotion-weight>⅓</span>
-                </div>
-              ))}
-            </div>
-          ))
-        }
-      </div>
-      <p class="promotion-weight-note">
-        One weight per execution, shared by its quality and cost. Tasks
-        contribute equally.
-      </p>
-    </div>
-  </details>
-  <p class="promotion-announcement" role="status" data-promotion-announcement>
+  <p
+    class="promotion-announcement"
+    role="status"
+    aria-live="polite"
+    data-promotion-announcement
+  >
   </p>
   <noscript
     ><p>
-      I-12 does not meet the default promotion threshold γ = 0.70.
+      The paper reports p̂ = 0.55 &lt; γ = 0.70: do not promote I-12.
     </p></noscript
   >
 </section>
 
 <script>
   import { observeChartTypography } from "../lib/figure-typography";
-  import {
-    promotionEvidence,
-    bootstrapPromotion,
-  } from "../data/promotion-evidence";
-  const root = document.querySelector<HTMLElement>(".promotion-demo");
+  import { bootstrapPromotion } from "../data/promotion-evidence";
+
+  const root = document.querySelector<HTMLElement>("#promotion-demo");
   if (root) {
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    const details = root.closest("details")!;
     const play = root.querySelector<HTMLButtonElement>(
       "[data-promotion-play]",
     )!;
@@ -271,17 +204,12 @@ import { promotionEvidence } from "../data/promotion-evidence";
       "[data-promotion-threshold]",
     )!;
     const cloud = root.querySelector<SVGGElement>("[data-promotion-cloud]")!;
-    const current = root.querySelector<SVGCircleElement>(
-      "[data-promotion-current]",
-    )!;
-    const details = root.closest("details")!;
     let data: ReturnType<typeof bootstrapPromotion> | null = null;
     let dots: SVGCircleElement[] = [];
     let drawCount = 0,
-      task = 0,
+      visibleDots = 0,
       frame = 0,
-      start = 0,
-      previousWeightDraw = -1;
+      start = 0;
     let hasPlayed = false,
       playing = false;
     const text = (selector: string, value: string) => {
@@ -320,39 +248,6 @@ import { promotionEvidence } from "../data/promotion-evidence";
       cloud.append(fragment);
       play.disabled = scrub.disabled = threshold.disabled = false;
     };
-    const showWeights = (index: number) => {
-      text(
-        "[data-promotion-weight-draw]",
-        index < 0
-          ? "Equal weights"
-          : `Draw ${(index + 1).toLocaleString("en-US")} weights`,
-      );
-      const weights =
-        index < 0
-          ? [
-              [1 / 3, 1 / 3, 1 / 3],
-              [1 / 3, 1 / 3, 1 / 3],
-            ]
-          : data!.draws[index].weights[task];
-      root
-        .querySelectorAll<HTMLElement>("[data-promotion-harness]")
-        .forEach((group, side) => {
-          group
-            .querySelectorAll<HTMLElement>("[data-promotion-run]")
-            .forEach((row, run) => {
-              const w = weights[side][run];
-              row.querySelector<HTMLElement>(
-                ".promotion-weight i",
-              )!.style.transform = `scaleX(${w})`;
-              row.querySelector("[data-promotion-weight]")!.textContent =
-                `${Math.round(w * 100)}%`;
-              const [q, c] =
-                promotionEvidence[task][side ? "candidate" : "parent"][run];
-              row.querySelector("[data-promotion-observation]")!.textContent =
-                `${q}% / $${c.toFixed(2)}`;
-            });
-        });
-    };
     const render = () => {
       if (!data) return;
       root.dataset.drawCount = String(drawCount);
@@ -376,8 +271,8 @@ import { promotionEvidence } from "../data/promotion-evidence";
       text(
         "[data-promotion-comparison]",
         drawCount
-          ? `${support.toFixed(2)} ${support >= gamma ? "≥" : "<"} ${gamma.toFixed(2)}`
-          : "p̂ ≥ γ",
+          ? `p̂ ${support.toFixed(2)} ${support >= gamma ? "≥" : "<"} γ ${gamma.toFixed(2)}`
+          : "Promote when p̂ ≥ γ",
       );
       const decision = root.querySelector<HTMLElement>(
         "[data-promotion-decision]",
@@ -392,49 +287,20 @@ import { promotionEvidence } from "../data/promotion-evidence";
           ? "Promote → development"
           : "Do not promote"
         : drawCount
-          ? "Collecting support…"
+          ? "Estimating support…"
           : "Waiting for evidence";
-      dots.forEach((dot, index) => {
-        const visible = index * 20 < drawCount;
-        dot.setAttribute("visibility", visible ? "visible" : "hidden");
-        dot.style.opacity = visible
-          ? data!.draws[index * 20].passes
-            ? "0.65"
-            : "0.42"
-          : "0";
-      });
-      const weightIndex = drawCount
-        ? Math.min(9999, Math.floor((drawCount - 1) / 500) * 500)
-        : -1;
-      if (weightIndex !== previousWeightDraw) {
-        showWeights(weightIndex);
-        previousWeightDraw = weightIndex;
-      }
-      current.setAttribute(
-        "visibility",
-        drawCount &&
-          !complete &&
-          root.querySelector<HTMLDetailsElement>(".promotion-evidence-panel")!
-            .open
-          ? "visible"
-          : "hidden",
-      );
-      if (drawCount) {
-        const draw = data.draws[weightIndex];
-        current.setAttribute("cx", String(64 + (draw.cost + 50) * 4.64));
-        current.setAttribute(
-          "cy",
-          String(286 - ((draw.quality + 30) * 254) / 60),
+      const nextVisible = Math.ceil(drawCount / 20);
+      for (
+        let index = Math.min(visibleDots, nextVisible);
+        index < Math.max(visibleDots, nextVisible);
+        index++
+      ) {
+        dots[index].setAttribute(
+          "visibility",
+          index < nextVisible ? "visible" : "hidden",
         );
       }
-      text(
-        "[data-promotion-explanation]",
-        complete
-          ? support >= gamma
-            ? "The candidate advances to development evaluation at this threshold."
-            : "The repeated evidence does not meet the promotion threshold."
-          : "Reweighting the parent and candidate observations to estimate support.",
-      );
+      visibleDots = nextVisible;
     };
     const pause = () => {
       cancelAnimationFrame(frame);
@@ -456,10 +322,9 @@ import { promotionEvidence } from "../data/promotion-evidence";
       );
     };
     const tick = (now: number) => {
-      const elapsed = now - start;
       drawCount = Math.max(
         0,
-        Math.min(10000, Math.floor(((elapsed - 650) / 3600) * 10000)),
+        Math.min(10000, Math.floor(((now - start - 350) / 2800) * 10000)),
       );
       render();
       if (drawCount === 10000) finish();
@@ -474,10 +339,11 @@ import { promotionEvidence } from "../data/promotion-evidence";
         return;
       }
       if (drawCount === 10000) drawCount = 0;
+      render();
       playing = true;
       play.dataset.playing = "true";
       start =
-        performance.now() - (drawCount ? 650 + (drawCount / 10000) * 3600 : 0);
+        performance.now() - (drawCount ? 350 + (drawCount / 10000) * 2800 : 0);
       setPlayLabel("Pause");
       frame = requestAnimationFrame(tick);
     };
@@ -497,32 +363,19 @@ import { promotionEvidence } from "../data/promotion-evidence";
           root.querySelector("[data-promotion-decision]")!.textContent!,
         );
     });
-    root
-      .querySelectorAll<HTMLButtonElement>("[data-promotion-task]")
-      .forEach((button) => {
-        button.addEventListener("click", () => {
-          task = Number(button.dataset.promotionTask);
-          root
-            .querySelectorAll("[data-promotion-task]")
-            .forEach((element) =>
-              element.setAttribute("aria-pressed", String(element === button)),
-            );
-          showWeights(previousWeightDraw);
-        });
-      });
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries[0].isIntersecting;
-        if (visible && details.open && !hasPlayed) begin();
-        else if (!visible && playing) pause();
+        if (entries[0].isIntersecting && details.open && !hasPlayed) begin();
+        else if (!entries[0].isIntersecting && playing) pause();
       },
-      { threshold: 0.25 },
+      { threshold: 0.15 },
     );
     observer.observe(root.querySelector(".promotion-distribution")!);
     details.addEventListener("toggle", () => {
       if (details.open) initialize();
       else pause();
     });
+    details.addEventListener("disclosure-closing", pause);
     document.addEventListener("visibilitychange", () => {
       if (document.hidden && playing) pause();
     });
@@ -531,50 +384,37 @@ import { promotionEvidence } from "../data/promotion-evidence";
     });
     observeChartTypography(
       root.querySelector<SVGSVGElement>(".promotion-plot")!,
-      {
-        compactAxis: { x: -4, y: 159 },
-      },
+      { compactAxis: { x: -4, y: 159 } },
     );
     setPlayLabel("Play");
-    // Initialize controls even if the details was opened by a restored browser state.
     if (details.open) initialize();
   }
 </script>
 
 <style>
   .promotion-demo {
-    margin: 18px 0 22px;
     color: var(--ink);
-    --figure-rule: #dedfd8;
-    --figure-muted: #777c73;
+    margin: 0;
   }
-  .promotion-heading {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 24px;
-    margin-bottom: 32px;
+  .promotion-rule {
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0 0 16px;
+    color: var(--muted);
   }
-  .promotion-kicker {
-    color: var(--figure-muted);
-    font-size: 12px;
-  }
-  .promotion-heading h3 {
-    margin: 7px 0 0;
-  }
-  .promotion-reference {
-    font-size: 11px;
-    color: var(--figure-muted);
-    padding-bottom: 3px;
+  .promotion-rule strong {
+    color: var(--ink);
   }
   .promotion-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 230px;
-    gap: 48px;
-    align-items: start;
+    grid-template-columns: minmax(0, 420px) minmax(0, 240px);
+    justify-content: center;
+    gap: 32px;
+    align-items: center;
   }
   .promotion-distribution {
     min-width: 0;
+    max-width: 420px;
   }
   .promotion-plot {
     display: block;
@@ -582,114 +422,76 @@ import { promotionEvidence } from "../data/promotion-evidence";
     overflow: visible;
   }
   .promotion-plot-field {
-    fill: #fbfbf8;
+    fill: #fff;
   }
   .promotion-support-region {
-    fill: #eef2e9;
+    fill: var(--pale);
   }
   .promotion-grid line {
-    stroke: #e9eae3;
+    stroke: #e8ede8;
     stroke-width: 0.65;
   }
   .promotion-zero {
-    stroke: #bfc6ba;
+    stroke: #bfcac1;
     stroke-width: 0.85;
   }
   .promotion-axis {
     fill: none;
-    stroke: #c9ccc2;
+    stroke: #bfcac1;
     stroke-width: 0.8;
   }
   .promotion-allowance {
     fill: none;
-    stroke: #8e9b84;
+    stroke: #8ba18f;
     stroke-width: 0.85;
     stroke-dasharray: 3 4;
   }
   .promotion-plot text {
-    font: 10px var(--font-sans);
-    fill: #72786b;
+    font: 12px var(--font-sans);
+    fill: var(--muted);
   }
   .promotion-plot .promotion-region-label {
-    font-size: 10px;
-    fill: #62755b;
-  }
-  .promotion-plot .promotion-limit-label {
-    font-size: 9px;
+    fill: var(--green);
   }
   .promotion-distribution :global(.promotion-draw) {
     fill: #9d9b8b;
-    opacity: 0;
-    transition: opacity 0.35s ease;
+    opacity: 0.42;
   }
   .promotion-distribution :global(.promotion-draw.supports) {
-    fill: #4b7252;
-  }
-  .promotion-current {
-    fill: #263f2c;
-    stroke: white;
-    stroke-width: 1.5;
+    fill: var(--green);
+    opacity: 0.65;
   }
   .promotion-plot-legend {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    font-size: 10px;
-    color: var(--figure-muted);
-    margin-top: 3px;
+    gap: 14px;
+    margin-top: 0;
+    color: var(--muted);
   }
   .promotion-plot-legend i {
     display: inline-block;
     width: 5px;
     height: 5px;
+    margin-right: 5px;
     border-radius: 50%;
     background: #9d9b8b;
-    margin-right: 5px;
   }
   .promotion-plot-legend .promotion-support-key {
-    background: #4b7252;
+    background: var(--green);
   }
   .promotion-playback {
     display: flex;
     align-items: center;
-    gap: 25px;
-    margin: 25px 0 0 11.4%;
-  }
-  .promotion-play {
-    border: 0;
-    background: none;
-    color: var(--ink);
-    font-size: 12px;
-    text-align: left;
-    padding: 0;
-    min-height: 44px;
-    min-width: 58px;
+    gap: 14px;
+    margin: 10px 0 0 11.4%;
   }
   .promotion-play::before {
     content: "";
-    display: inline-block;
+    display: block;
     width: 0;
     height: 0;
-    border-left: 5px solid currentColor;
-    border-block: 3px solid transparent;
-    margin-right: 9px;
-  }
-  .promotion-play[data-playing="true"]::before {
-    width: 5px;
-    height: 7px;
-    border: 0;
-    border-inline: 1.5px solid currentColor;
-  }
-  :global(.promotion-equations > summary) {
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--muted);
-    padding: 11px 0;
-  }
-  :global(.promotion-equations > div) {
-    font-size: 14px;
-    color: var(--muted);
-    padding-bottom: 18px;
+    border-left: 8px solid currentColor;
+    border-block: 5px solid transparent;
   }
   .promotion-timeline {
     flex: 1;
@@ -699,8 +501,6 @@ import { promotionEvidence } from "../data/promotion-evidence";
     display: flex;
     align-items: baseline;
     gap: 5px;
-    color: var(--figure-muted);
-    font-size: 11px;
   }
   .promotion-demo label output {
     margin-left: auto;
@@ -710,232 +510,108 @@ import { promotionEvidence } from "../data/promotion-evidence";
     appearance: none;
     -webkit-appearance: none;
     display: block;
-    background: transparent;
     width: 100%;
+    height: 30px;
+    background: transparent;
     margin: 0;
-    min-width: 0;
-    height: 26px;
     cursor: pointer;
   }
   .promotion-demo input[type="range"]::-webkit-slider-runnable-track {
-    height: 1px;
-    background: #bfc5b9;
+    height: 2px;
+    background: var(--line);
   }
   .promotion-demo input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 9px;
-    height: 9px;
+    width: 10px;
+    height: 10px;
     margin-top: -4px;
-    background: #394b38;
+    background: var(--green);
     border: 0;
     border-radius: 50%;
   }
   .promotion-demo input[type="range"]::-moz-range-track {
-    height: 1px;
-    background: #bfc5b9;
+    height: 2px;
+    background: var(--line);
   }
   .promotion-demo input[type="range"]::-moz-range-thumb {
-    width: 9px;
-    height: 9px;
-    background: #394b38;
+    width: 10px;
+    height: 10px;
+    background: var(--green);
     border: 0;
     border-radius: 50%;
   }
   .promotion-reading {
-    padding-top: 31px;
+    min-width: 0;
+    display: grid;
+    gap: 12px;
+  }
+  .promotion-support-value {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
   }
   .promotion-support-value > span {
     display: block;
-    color: var(--figure-muted);
-    font-size: 12px;
-  }
-  .promotion-support-value i,
-  .promotion-gate i {
-    font-family: Georgia, serif;
+    color: var(--muted);
+    font-size: 13px;
   }
   .promotion-support-value strong {
     display: block;
-    color: #303d2d;
-    font-size: 72px;
-    font-weight: 400;
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: normal;
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.065em;
-    line-height: 1.3;
-    margin: 4px 0 24px;
   }
   .promotion-gate {
     --support: 0%;
   }
-  .promotion-gate label {
-    font-size: 12px;
-    color: var(--ink);
-  }
   .promotion-gate output {
-    font-size: 16px;
+    font-size: 14px;
   }
   .promotion-threshold-control {
     position: relative;
   }
   .promotion-support-tick {
     position: absolute;
-    top: 8px;
-    height: 10px;
-    left: clamp(4px, var(--support), calc(100% - 4px));
+    top: 9px;
+    height: 12px;
     width: 1px;
-    background: #7d8d70;
+    left: clamp(4px, var(--support), calc(100% - 4px));
+    background: var(--muted);
     pointer-events: none;
   }
-  .promotion-adjust-hint {
-    display: block;
-    font-size: 10px;
-    color: var(--figure-muted);
-    margin-top: -1px;
-  }
   .promotion-conclusion {
-    margin-top: 26px;
-    padding-top: 18px;
+    margin: 0;
   }
   .promotion-comparison {
     display: block;
-    font-size: 12px;
-    color: var(--figure-muted);
+    color: var(--muted);
+    font-size: 13px;
     font-variant-numeric: tabular-nums;
-    margin-bottom: 6px;
   }
   .promotion-decision {
-    font-size: 19px;
-    font-weight: 500;
-    letter-spacing: -0.025em;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    min-height: 21px;
   }
   .promotion-decision[data-result="promote"] {
-    color: #38613f;
+    color: var(--green);
   }
-  .promotion-demo .promotion-explanation {
+  .promotion-settings {
+    color: var(--muted);
     font-size: 12px;
-    color: var(--figure-muted);
-    margin: 8px 0 0;
-    line-height: 1.75;
-  }
-  .promotion-demo .promotion-case-note {
-    font-size: 11px;
-    color: var(--figure-muted);
-    margin: 22px 0 0;
-    line-height: 1.8;
-  }
-  .promotion-evidence-panel {
-    margin-top: 28px;
-  }
-  .promotion-demo .promotion-evidence-panel > summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    list-style: none;
-    gap: 12px;
-    padding: 14px 0;
-    font-size: 12px;
-    font-weight: 400;
-  }
-  .promotion-evidence-panel > summary::-webkit-details-marker {
-    display: none;
-  }
-  .promotion-evidence-panel > summary::after {
-    content: "+";
-    font-size: 17px;
-    font-weight: 300;
-  }
-  .promotion-evidence-panel[open] > summary::after {
-    content: "−";
-  }
-  .promotion-evidence-panel > summary span {
-    margin-left: auto;
-    color: var(--figure-muted);
-    font-size: 11px;
-  }
-  .promotion-evidence {
-    padding: 4px 0 20px;
-  }
-  .promotion-task-switch {
-    display: flex;
-    gap: 25px;
-    margin-bottom: 20px;
-  }
-  .promotion-task-switch button {
-    border: 0;
-    border-bottom: 1px solid transparent;
-    background: none;
-    color: var(--figure-muted);
-    font-size: 12px;
-    padding: 4px 0;
-    min-height: 35px;
-  }
-  .promotion-task-switch button[aria-pressed="true"] {
-    color: var(--ink);
-    border-bottom-color: #7d8d70;
-  }
-  .promotion-observations {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3px 45px;
-  }
-  .promotion-run-heading {
-    display: flex;
-    justify-content: space-between;
-    grid-column: 1/-1;
-    font-size: 10px;
-    color: var(--figure-muted);
-    margin-bottom: 7px;
-  }
-  .promotion-harness h4 {
-    margin: 0 0 7px;
-    font-size: var(--panel-heading-size);
-    font-weight: 600;
-    line-height: 20px;
-  }
-  .promotion-run {
-    display: grid;
-    grid-template-columns: 18px 1fr 70px 30px;
-    align-items: center;
-    gap: 9px;
-    font-size: 11px;
-    line-height: 2.4;
-    font-variant-numeric: tabular-nums;
-  }
-  .promotion-run-index {
-    color: var(--figure-muted);
-    font-size: 9px;
-  }
-  .promotion-weight {
-    height: 2px;
-    background: #e1e5db;
-  }
-  .promotion-weight i {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background: #718568;
-    transform-origin: left;
-  }
-  [data-promotion-weight] {
-    color: var(--figure-muted);
-    text-align: right;
-  }
-  .promotion-demo .promotion-weight-note {
-    font-size: 11px;
-    color: var(--figure-muted);
-    margin: 17px 0 0;
-  }
-  .promotion-demo .promotion-figure-note {
-    font-size: 10px;
-    color: var(--figure-muted);
-    margin: 15px 0 0;
-    line-height: 1.8;
-    max-width: 850px;
+    line-height: 1.6;
+    margin: 0;
   }
   .promotion-announcement {
     position: absolute;
     width: 1px;
     height: 1px;
+    margin: 0;
     overflow: hidden;
     clip-path: inset(50%);
   }
@@ -944,121 +620,45 @@ import { promotionEvidence } from "../data/promotion-evidence";
     opacity: 0.5;
     cursor: default;
   }
-  @media (max-width: 960px) {
-    .promotion-layout {
-      grid-template-columns: minmax(0, 1fr) 190px;
-      gap: 28px;
-    }
-    .promotion-support-value strong {
-      font-size: 60px;
-    }
-    .promotion-reading {
-      padding-top: 20px;
-    }
-  }
-  @media (max-width: 640px) {
-    .promotion-heading {
-      margin-bottom: 14px;
-      align-items: flex-start;
-      gap: 10px;
-    }
-    .promotion-reference {
-      max-width: 95px;
-      text-align: right;
-      font-size: 10px;
-      line-height: 1.6;
-    }
-    .promotion-kicker {
-      font-size: 11px;
+  @media (max-width: 680px) {
+    .promotion-rule {
+      font-size: 15px;
+      margin-bottom: 10px;
     }
     .promotion-layout {
-      grid-template-columns: 1fr;
-      gap: 27px;
-    }
-    .promotion-playback {
-      margin-top: 18px;
+      grid-template-columns: minmax(0, 1fr);
       gap: 18px;
     }
-    .promotion-reading {
-      display: grid;
-      grid-template-columns: 95px minmax(0, 1fr);
-      gap: 0 28px;
-      padding-top: 0;
+    .promotion-distribution {
+      width: 100%;
+      max-width: 360px;
+      margin: auto;
     }
-    .promotion-support-value > span {
-      font-size: 10px;
+    .promotion-reading {
+      width: 100%;
+      max-width: 360px;
+      margin: auto;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      gap: 8px 16px;
     }
     .promotion-support-value strong {
-      font-size: 48px;
-      margin: 5px 0 0;
+      font-size: 18px;
     }
-    .promotion-gate {
-      padding-top: 4px;
+    .promotion-support-value > span {
+      font-size: 12px;
     }
-    .promotion-conclusion {
-      grid-column: 1/-1;
-      margin-top: 15px;
-      padding-top: 14px;
+    .promotion-conclusion,
+    .promotion-settings {
+      grid-column: 1 / -1;
+      margin-top: 0;
     }
     .promotion-comparison {
       display: inline;
-      margin-right: 14px;
-      font-size: 11px;
+      margin-right: 10px;
     }
     .promotion-decision {
       display: inline;
-      font-size: 17px;
-    }
-    .promotion-demo .promotion-explanation {
-      margin-top: 5px;
-    }
-    .promotion-demo .promotion-case-note {
-      grid-column: 1/-1;
-      margin-top: 13px;
-    }
-    .promotion-evidence-panel {
-      margin-top: 23px;
-    }
-    .promotion-evidence-panel > summary span {
-      font-size: 10px;
-    }
-    .promotion-task-switch {
-      gap: 14px;
-    }
-    .promotion-task-switch button {
-      flex: 1;
-      font-size: 10px;
-      text-align: left;
-      line-height: 1.5;
-    }
-    .promotion-observations {
-      gap: 3px 20px;
-    }
-    .promotion-run {
-      grid-template-columns: 1fr 25px;
-      gap: 0 5px;
-      font-size: 11px;
-    }
-    .promotion-run-index {
-      display: none;
-    }
-    [data-promotion-observation] {
-      grid-column: 1/-1;
-    }
-    .promotion-plot text {
-      font-size: 15px;
-    }
-    .promotion-plot .promotion-region-label,
-    .promotion-plot .promotion-limit-label {
       font-size: 14px;
-    }
-    .promotion-demo .promotion-figure-note {
-      font-size: 10px;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .promotion-distribution :global(.promotion-draw) {
-      transition: none;
     }
   }
 </style>
