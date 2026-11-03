@@ -1,9 +1,11 @@
+const arxivId = "2611.02079";
+
 export const project = {
   title:
     "ParetoSaddler: Pareto-Guided Optimization of Agent Harnesses for Quality and Cost",
   year: 2026,
   codeUrl: "https://github.com/microsoft/AutoSaddler/tree/feat/paretosaddler",
-  arxivUrl: "",
+  arxivUrl: `https://arxiv.org/abs/${arxivId}`,
   authors: [
     { name: "Xingzhi Qian", affiliation: "1", note: "*" },
     { name: "Sungho Park", affiliation: "2", note: "*" },
@@ -36,5 +38,8 @@ export const bibtex = `@misc{qian2026paretosaddler,
   title={${project.title}},
   author={${project.authors.map(({ name }) => name).join(" and ")}},
   year={${project.year}},
-  note={Preprint}
+  eprint={${arxivId}},
+  archivePrefix={arXiv},
+  primaryClass={cs.AI},
+  url={${project.arxivUrl}}
 }`;

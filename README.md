@@ -2,9 +2,10 @@
 
 Project page for **ParetoSaddler: Pareto-Guided Optimization of Agent Harnesses for Quality and Cost**.
 
-[Project page](https://autosaddler-projectpage.github.io/paretosaddler-proj/) · [Code](https://github.com/microsoft/AutoSaddler/tree/feat/paretosaddler)
+[Project page](https://autosaddler-projectpage.github.io/ParetoSaddler/) · [Code](https://github.com/microsoft/AutoSaddler/tree/feat/paretosaddler) · [arXiv](https://arxiv.org/abs/2611.02079)
 
 Built with Astro 6, MDX, React 19, and Tailwind CSS v4, using [Roman Hauksson-Neill's academic project page template](https://github.com/RomanHauksson/academic-project-astro-template).
+
 ## Develop
 
 Use Node.js 24 or later.
@@ -17,7 +18,7 @@ npm run preview  # Preview the production build
 ```
 
 - Page content and section layout: [`src/paper.mdx`](src/paper.mdx).
-- Title, authors, resource links, and BibTeX: [`src/data/project.ts`](src/data/project.ts). Set `arxivUrl` when the paper is available on arXiv; the button is currently disabled.
+- Title, authors, resource links, and BibTeX: [`src/data/project.ts`](src/data/project.ts).
 - Results and ablation tables: [`src/data/results.ts`](src/data/results.ts) and [`src/data/ablations.ts`](src/data/ablations.ts). Paper figures are in [`public/figures/`](public/figures/).
 
 ## Interactive demos
@@ -27,9 +28,9 @@ npm run preview  # Preview the production build
 
 ## Deploy
 
-Pushing to `main` runs [`.github/workflows/astro.yml`](.github/workflows/astro.yml), which checks, builds, and deploys the site to [GitHub Pages](https://felixqxz.github.io/paretosaddler-proj/). In the repository settings, set **Pages → Source → GitHub Actions**.
+Pushing to `main` runs [`.github/workflows/astro.yml`](.github/workflows/astro.yml), which checks, builds, and deploys the site to [GitHub Pages](https://autosaddler-projectpage.github.io/ParetoSaddler/). In the repository settings, set **Pages → Source → GitHub Actions**.
 
-The workflow supplies the Pages origin and base path to Astro, so assets resolve under `/paretosaddler-proj/`.
+The workflow supplies the Pages origin and base path to Astro, so assets resolve under `/ParetoSaddler/`.
 
 ## Credits
 
