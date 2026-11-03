@@ -1,5 +1,5 @@
-/* Shared visual language for the three interactive research figures. */
-:is(#scroll-trajectories, #results-explorer, #promotion-demo).research-figure {
+/* Shared styling for the interactive research figures. */
+:is(#scroll-trajectories, #promotion-demo).research-figure {
   --figure-ink: var(--ink);
   --figure-muted: #637067;
   --figure-accent: #426b47;
@@ -12,13 +12,7 @@
   --j-muted: var(--figure-muted);
   --j-green: var(--figure-accent);
 }
-#results-explorer.research-figure {
-  --result-ink: var(--figure-ink);
-  --result-muted: var(--figure-muted);
-  --result-rule: var(--figure-rule);
-}
-:is(#scroll-trajectories, #results-explorer, #promotion-demo).research-figure
-  .figure-tabs {
+:is(#scroll-trajectories, #promotion-demo).research-figure .figure-tabs {
   display: flex;
   align-items: stretch;
   gap: 28px;
@@ -26,9 +20,7 @@
   border-radius: 0;
   padding: 0;
 }
-:is(#scroll-trajectories, #results-explorer, #promotion-demo).research-figure
-  .figure-tabs
-  button {
+:is(#scroll-trajectories, #promotion-demo).research-figure .figure-tabs button {
   padding: 8px 0;
   min-height: 44px;
   border: 0;
@@ -44,40 +36,29 @@
     color 140ms,
     border-color 140ms;
 }
-:is(#scroll-trajectories, #results-explorer, #promotion-demo).research-figure
+:is(#scroll-trajectories, #promotion-demo).research-figure
   .figure-tabs
   button:hover {
   color: var(--figure-ink);
 }
-:is(#scroll-trajectories, #results-explorer, #promotion-demo).research-figure
+:is(#scroll-trajectories, #promotion-demo).research-figure
   .figure-tabs
   button[aria-pressed="true"] {
   color: var(--figure-ink);
   border-bottom-color: var(--figure-accent);
   font-weight: 600;
 }
-#promotion-demo.research-figure .figure-tabs--compact {
-  gap: 24px;
-}
-#promotion-demo.research-figure .figure-tabs--compact button {
-  min-height: 38px;
-  font-size: 14px;
-  line-height: 22px;
-}
-:is(#scroll-trajectories, #results-explorer, #promotion-demo).research-figure
+:is(#scroll-trajectories, #promotion-demo).research-figure
   :is(button, input):focus-visible {
   outline: 2px solid var(--figure-accent);
   outline-offset: 4px;
 }
-:is(#scroll-trajectories, #results-explorer, #promotion-demo).research-figure
-  svg
-  text {
+:is(#scroll-trajectories, #promotion-demo).research-figure svg text {
   font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
 #scroll-trajectories.research-figure
   :is([data-map-grid] text, .journey-map-svg > text),
-#results-explorer.research-figure .results-plot text,
 #promotion-demo.research-figure .promotion-plot > text {
   font-size: var(--chart-tick-size, 16px);
   fill: var(--figure-muted);
@@ -86,8 +67,7 @@
 #scroll-trajectories.research-figure .map-label text {
   font-size: var(--chart-label-size, 14px);
 }
-#scroll-trajectories.research-figure .journey-axis-title,
-#results-explorer.research-figure .results-plot .axis-title {
+#scroll-trajectories.research-figure .journey-axis-title {
   fill: #4b5c50;
 }
 #promotion-demo.research-figure
@@ -98,8 +78,8 @@
 #promotion-demo.research-figure .promotion-plot .promotion-region-label {
   fill: var(--figure-accent);
 }
-:is(#scroll-trajectories, #results-explorer, #promotion-demo).research-figure
-  :is(.journey-map-legend, .plot-legend, .promotion-plot-legend) {
+:is(#scroll-trajectories, #promotion-demo).research-figure
+  :is(.journey-map-legend, .promotion-plot-legend) {
   font-size: 12px;
   line-height: 1.6;
   gap: 6px 16px;
@@ -109,22 +89,7 @@
 #promotion-demo.research-figure .promotion-plot-legend {
   color: var(--figure-muted);
 }
-#promotion-demo.research-figure .promotion-heading h3 {
-  margin-top: 0;
-  font-size: var(--subheading-size);
-  line-height: 1.5;
-  font-weight: 600;
-  letter-spacing: normal;
-}
-#promotion-demo.research-figure
-  :is(
-    .promotion-explanation,
-    .promotion-case-note,
-    .promotion-weight-note,
-    .promotion-adjust-hint,
-    .promotion-run-heading,
-    label
-  ) {
+#promotion-demo.research-figure :is(label) {
   color: var(--figure-muted);
   font-size: 12px;
   line-height: 1.6;
@@ -184,11 +149,10 @@
   background: var(--figure-accent);
 }
 @media (max-width: 760px) {
-  :is(#scroll-trajectories, #results-explorer, #promotion-demo).research-figure
-    .figure-tabs {
+  :is(#scroll-trajectories, #promotion-demo).research-figure .figure-tabs {
     gap: 24px;
   }
-  :is(#scroll-trajectories, #results-explorer, #promotion-demo).research-figure
+  :is(#scroll-trajectories, #promotion-demo).research-figure
     .figure-tabs
     button {
     min-height: 36px;
@@ -196,18 +160,8 @@
     font-size: 16px;
     line-height: 24px;
   }
-  #promotion-demo.research-figure .figure-tabs--compact {
-    gap: 12px;
-  }
-  #promotion-demo.research-figure .figure-tabs--compact button {
-    flex: 1;
-    min-width: 0;
-    font-size: 12px;
-    line-height: 18px;
-    text-align: left;
-  }
-  :is(#scroll-trajectories, #results-explorer, #promotion-demo).research-figure
-    :is(.journey-map-legend, .plot-legend, .promotion-plot-legend) {
+  :is(#scroll-trajectories, #promotion-demo).research-figure
+    :is(.journey-map-legend, .promotion-plot-legend) {
     font-size: 11px;
     line-height: 1.5;
     gap: 4px 10px;
@@ -229,7 +183,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  :is(#scroll-trajectories, #results-explorer, #promotion-demo).research-figure
+  :is(#scroll-trajectories, #promotion-demo).research-figure
     .figure-tabs
     button,
   #promotion-demo.research-figure .promotion-play {

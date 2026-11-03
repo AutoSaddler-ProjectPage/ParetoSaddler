@@ -3,8 +3,7 @@ export default {
   styleOverrides: {
     borderRadius: "0.5rem",
     borderWidth: "0",
-    codeBackground: ({ theme }) =>
-      `var(--color-zinc-${theme.type === "dark" ? "800" : "200"})`,
+    codeBackground: "var(--citation-background)",
     frames: {
       shadowColor: "transparent",
     },

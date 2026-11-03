@@ -15,8 +15,7 @@ const authorRows = [
     <h1>
       <span class="project-name"
         ><span class="project-name-gradient">ParetoSaddler</span></span
-      ><span
-        class="project-subtitle"
+      ><span class="project-subtitle"
         >Pareto-Guided Optimization of Agent Harnesses<br
           class="desktop-break"
         /> for Quality and Cost</span
@@ -61,27 +60,12 @@ const authorRows = [
         target="_blank"
         rel="noopener noreferrer"><Icon name="ri:github-line" /> Code</a
       >
-      {
-        project.arxivUrl ? (
-          <a
-            class="resource"
-            href={project.arxivUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Icon name="academicons:arxiv" /> arXiv
-          </a>
-        ) : (
-          <button
-            class="resource"
-            type="button"
-            disabled
-            aria-label="arXiv link not yet available"
-          >
-            <Icon name="academicons:arxiv" /> arXiv
-          </button>
-        )
-      }
+      <a
+        class="resource"
+        href={project.arxivUrl}
+        target="_blank"
+        rel="noopener noreferrer"><Icon name="academicons:arxiv" /> arXiv</a
+      >
     </div>
     <div class="hero-message">
       <p class="hero-lede">
@@ -153,10 +137,6 @@ const authorRows = [
   }
   .project-header a.resource:hover {
     background: #000;
-  }
-  .project-header .resource:disabled {
-    cursor: default;
-    opacity: 1;
   }
   .project-header .resource svg {
     width: 1em;

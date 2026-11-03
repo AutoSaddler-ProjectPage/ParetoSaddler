@@ -151,9 +151,9 @@ import "../styles/scroll-trajectory.css";
             aria-label="Quality and cost on development data. Play the optimization trajectory or select an iteration."
           >
             <desc
-              >Arrowheads show the direction of harness updates. Dashed
-              gold lines show the current Pareto frontier. Rejected proposals
-              have no development point.</desc
+              >Arrowheads show the direction of harness updates. Dashed gold
+              lines show the current Pareto frontier. Rejected proposals have no
+              development point.</desc
             >
             <rect
               class="journey-plot-field"
@@ -783,25 +783,6 @@ import "../styles/scroll-trajectory.css";
       if (moveFocus) svg.focus({ preventScroll: true });
       requestUpdate();
     };
-    /* Standalone player entry points, retained for optional restoration.
-    const openPlayer = () => {
-      const player =
-        document.querySelector<HTMLDetailsElement>("#trajectory-player");
-      if (player) player.open = true;
-    };
-    root.addEventListener("click", (event) => {
-      if (
-        event.target instanceof Element &&
-        event.target.closest('a[href="#trajectory-player"]')
-      )
-        openPlayer();
-    });
-    const revealPlayerHash = () => {
-      if (location.hash === "#trajectory-player") openPlayer();
-    };
-    window.addEventListener("hashchange", revealPlayerHash);
-    revealPlayerHash();
-    */
     observeChartTypography(svg, {
       compactAxis: { x: 6, y: 244 },
       onChange: () => {
